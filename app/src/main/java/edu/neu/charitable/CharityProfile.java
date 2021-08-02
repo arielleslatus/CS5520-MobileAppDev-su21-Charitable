@@ -11,6 +11,8 @@ public class CharityProfile  extends AppCompatActivity {
 
     String charityName;
     String charityLocation;
+    String charityMission;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +24,12 @@ public class CharityProfile  extends AppCompatActivity {
 
         TextView charityNameTextView = findViewById(R.id.charityName);
         charityNameTextView.setText(charityName);
+
+        TextView charityLocationTextView = findViewById(R.id.charityLocation);
+        charityLocationTextView.setText(charityLocation);
+
+        TextView charityMissionTextView = findViewById(R.id.charityMission);
+        charityMissionTextView.setText(charityMission);
 
 
 
@@ -49,6 +57,7 @@ public class CharityProfile  extends AppCompatActivity {
 
         charityName = "ASPCA";
         charityLocation = "Boston, MA, USA";
+        charityMission = "Saving the lives of puppies and kittens since 1975.";
 
 
 
