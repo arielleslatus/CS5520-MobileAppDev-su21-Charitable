@@ -22,7 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class RegisterUser extends AppCompatActivity implements View.OnClickListener {
 
     private TextView banner, registerUser;
-    private EditText editTextFullName, editTextAge, editTextEmail, editTextPassword;
+    private EditText editTextFullName, editTextCity, editTextEmail, editTextPassword;
     private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
@@ -41,7 +41,7 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         registerUser.setOnClickListener(this);
 
         editTextFullName = (EditText) findViewById(R.id.fullName);
-        editTextAge = (EditText) findViewById(R.id.age);
+        editTextCity = (EditText) findViewById(R.id.city);
         editTextEmail = (EditText) findViewById(R.id.email);
         editTextPassword = (EditText) findViewById(R.id.password);
 
@@ -65,7 +65,7 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
         String fullName = editTextFullName.getText().toString().trim();
-        String age = editTextAge.getText().toString().trim();
+        String city = editTextCity.getText().toString().trim();
 
         if (fullName.isEmpty()) {
             editTextFullName.setError("Full name is required!");
@@ -73,9 +73,9 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        if (age.isEmpty()) {
-            editTextAge.setError("Age is required!");
-            editTextAge.requestFocus();
+        if (city.isEmpty()) {
+            editTextCity.setError("City is required!");
+            editTextCity.requestFocus();
             return;
         }
 
@@ -110,7 +110,7 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
             public void onComplete(@NonNull Task<AuthResult> task) {
 
                 if (task.isSuccessful()) {
-                    User user = new User(fullName, age, email);
+                    User user = new User(fullName, city, email);
 
                     FirebaseDatabase.getInstance().getReference("Users")
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())

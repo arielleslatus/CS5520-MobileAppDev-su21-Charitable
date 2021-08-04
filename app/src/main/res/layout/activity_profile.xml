@@ -7,20 +7,82 @@
     tools:context=".ProfileActivity">
 
     <TextView
-        android:id="@+id/TextView3"
+        android:id="@+id/greeting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="68dp"
-        android:layout_marginEnd="260dp"
-        android:layout_marginBottom="644dp"
-        android:text="Welcome!"
-        android:textSize="40sp"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+    <TextView
+        android:id="@+id/emailAddressTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email Address:"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/greeting"
+        app:layout_constraintLeft_toLeftOf="@+id/greeting"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:id="@+id/emailAdress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/emailAddressTitle"
+        app:layout_constraintLeft_toLeftOf="@+id/emailAddressTitle"
+        android:layout_marginLeft="30dp"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:id="@+id/fullNameTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Full Name:"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/emailAdress"
+        app:layout_constraintLeft_toLeftOf="@+id/greeting"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:id="@+id/fullName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/fullNameTitle"
+        app:layout_constraintLeft_toLeftOf="@+id/emailAddressTitle"
+        android:layout_marginLeft="30dp"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:id="@+id/cityTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="City:"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/fullName"
+        app:layout_constraintLeft_toLeftOf="@+id/fullNameTitle"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/cityTitle"
+        app:layout_constraintLeft_toLeftOf="@+id/fullNameTitle"
+        android:layout_marginLeft="30dp"
+        android:textSize="20sp"
+        />
+
 
     <Button
         android:id="@+id/signOut"
