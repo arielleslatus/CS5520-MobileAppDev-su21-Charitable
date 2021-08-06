@@ -7,4 +7,12 @@
     <string name="log_in">Log In</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
+    <string name="name_used_donations_to_buy_something">Name used donations to buy something!</string>
+    <string name="donate">Donate</string>
+    <string name="applaud">Applaud</string>
+    <string name="info">Info</string>
+    <string name="match">match</string>
+    <string name="share">share</string>
+    <string name="name_donated_to_name">Name donated to Name</string>
+    <string name="name_needs_your_help">Name needs your help!</string>
 </resources>
