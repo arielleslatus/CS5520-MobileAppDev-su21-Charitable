@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -17,15 +18,19 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class RegisterUser extends AppCompatActivity implements View.OnClickListener {
 
     private TextView banner, registerUser;
-    private EditText editTextFullName, editTextCity, editTextEmail, editTextPassword;
+    private EditText editTextFullName, editTextCity, editTextEmail, editTextPassword, editTextRepeat, editTextUsername;
     private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
+    private boolean usernameVerified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,9 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         editTextCity = (EditText) findViewById(R.id.city);
         editTextEmail = (EditText) findViewById(R.id.email);
         editTextPassword = (EditText) findViewById(R.id.password);
+        editTextRepeat = (EditText) findViewById(R.id.password_match);
+        editTextUsername = (EditText) findViewById(R.id.username);
+        usernameVerified = false;
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
@@ -66,6 +74,8 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         String password = editTextPassword.getText().toString().trim();
         String fullName = editTextFullName.getText().toString().trim();
         String city = editTextCity.getText().toString().trim();
+        String password_match = editTextRepeat.getText().toString().trim();
+        String username = editTextUsername.getText().toString().trim();
 
         if (fullName.isEmpty()) {
             editTextFullName.setError("Full name is required!");
@@ -103,6 +113,23 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
+        if (!password.equals(password_match)) {
+            editTextRepeat.setError("Passwords must match");
+            editTextRepeat.requestFocus();
+            return;
+        }
+
+        if (username.isEmpty()) {
+            editTextUsername.setError("username Unverified");
+            editTextUsername.requestFocus();
+            return;
+        }
+
+        if (!usernameVerified) {
+            editTextUsername.requestFocus();
+            return;
+        }
+
         progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -119,9 +146,27 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
                         public void onComplete(@NonNull Task<Void> task) {
 
                             if (task.isSuccessful()) {
+
+                                //adding username to searchable table (verify unique/find friends)
+                                FirebaseDatabase.getInstance()
+                                        .getReference("username_id")
+                                        .child(username)
+                                        .setValue(
+                                                FirebaseAuth.getInstance()
+                                                        .getCurrentUser()
+                                                        .getUid())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(RegisterUser.this,
+                                                "username updated",
+                                                Toast.LENGTH_SHORT).show();
+                                    }});
+
+
                                 Toast.makeText(RegisterUser.this, "User has been " +
                                         "registered successfully!", Toast.LENGTH_LONG).show();
-                                progressBar.setVisibility(View.VISIBLE);
+                                progressBar.setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(RegisterUser.this, "Failed to register!" +
                                         "Try again!", Toast.LENGTH_LONG).show();
@@ -144,4 +189,25 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void verifyUsername(View view) {
+        String username = editTextUsername.getText().toString().trim();
+        FirebaseDatabase.getInstance().getReference("username_id").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //username exists in db
+                if (snapshot.exists()) {
+                    editTextUsername.setError("username must be unique");
+                    editTextUsername.requestFocus();
+                } else {
+                    usernameVerified = true;
+                    editTextUsername.setBackgroundColor(Color.GREEN);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }
