@@ -6,6 +6,7 @@
         android:id="@+id/profile_page"
         android:icon="@drawable/profile_logo"
         android:title="@string/string_item"
+        android:textColor="@color/white"
         android:background="@color/purple_500"
         app:showAsAction="ifRoom" />
 </menu>

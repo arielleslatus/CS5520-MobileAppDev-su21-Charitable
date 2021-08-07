@@ -22,9 +22,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class Homepage extends AppCompatActivity {
 
-    // private static final String TAG = CreateAccount.class.getSimpleName();
-
-
     private DatabaseReference database;
     private FirebaseAuth auth;
 
@@ -33,16 +30,13 @@ public class Homepage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        this.auth = FirebaseAuth.getInstance();
-        this.database = FirebaseDatabase.getInstance().getReference();
+        //this.auth = FirebaseAuth.getInstance();
+        //this.database = FirebaseDatabase.getInstance().getReference();
 
-        Toolbar myToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);
-
-
-
-
-
+        Toolbar myToolbar = findViewById(R.id.toolbar);                         // Get the toolbar.
+        myToolbar.setTitleTextColor(getResources().getColor(R.color.white));    // Change toolbar text to white.
+        setSupportActionBar(myToolbar);                                         // Set support action bar to custom toolbar.
+        getSupportActionBar().setTitle("CHARITABLE");                           // Set text (page title) in toolbar.
     }
 
     @Override
@@ -51,8 +45,6 @@ public class Homepage extends AppCompatActivity {
         return true;
     }
 
-    public void goToProfile(View view) {
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -62,11 +54,7 @@ public class Homepage extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-
         }
-
-
-
     }
 
 
