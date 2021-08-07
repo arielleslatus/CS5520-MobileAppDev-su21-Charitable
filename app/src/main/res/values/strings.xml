@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Charitable</string>
+    <string name="donateButton">Donate Now</string>
 </resources>
