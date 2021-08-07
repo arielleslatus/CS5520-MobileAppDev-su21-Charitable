@@ -44,7 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ProfileActivity.this, upDateProfile.class));
+                startActivity(new Intent(ProfileActivity.this, UpDateProfile.class));
             }
         });
 

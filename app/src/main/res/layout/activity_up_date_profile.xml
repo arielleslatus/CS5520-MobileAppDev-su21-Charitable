@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".upDateProfile">
+    tools:context=".UpDateProfile">
 
     <TextView
         android:id="@+id/banner"
@@ -85,7 +85,7 @@
         app:layout_constraintTop_toBottomOf="@+id/email" />
 
     <Button
-        android:id="@+id/save"
+        android:id="@+id/updateProfile"
         android:layout_width="209dp"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
