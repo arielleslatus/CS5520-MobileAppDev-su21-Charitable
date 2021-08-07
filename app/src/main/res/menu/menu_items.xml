@@ -5,7 +5,7 @@
     <item
         android:id="@+id/profile_page"
         android:icon="@drawable/profile_logo"
-        android:title="Item"
+        android:title="@string/string_item"
         android:background="@color/purple_500"
         app:showAsAction="ifRoom" />
 </menu>

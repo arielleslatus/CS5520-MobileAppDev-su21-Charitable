@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +49,24 @@ public class Homepage extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_items, menu);
         return true;
+    }
+
+    public void goToProfile(View view) {
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.profile_page:
+                startActivity(new Intent(this, ProfileActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+
+
     }
 
 
