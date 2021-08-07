@@ -67,6 +67,8 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
 
+
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ProfileActivity.this, "Somthing wrong happened!",
@@ -76,4 +78,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
