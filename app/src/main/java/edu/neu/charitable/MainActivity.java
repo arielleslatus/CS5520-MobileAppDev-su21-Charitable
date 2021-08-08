@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -18,15 +19,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import android.util.Log;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private TextView register, forgotPassword;
     private EditText editTextEmail, editTextPassword;
     private Button signIn;
+    private Button debug;
 
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
+
+    private static final String TAG = "MainActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +55,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         forgotPassword = (TextView) findViewById(R.id.forgotPassword);
         forgotPassword.setOnClickListener(this);
+
+        debug = (Button) findViewById(R.id.debugButton);
+        debug.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()){
             case R.id.register:
                 startActivity(new Intent(this,RegisterUser.class));
@@ -63,6 +74,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.forgotPassword:
                 startActivity(new Intent(this, ForgotPassword.class));
+                break;
+
+            case R.id.debugButton:
+                Log.d(TAG, "Clicked debug button");
+                Intent debugIntent = new Intent(this, CharityProfile.class);
+                debugIntent.putExtra("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
+                startActivity(debugIntent);
                 break;
         }
 
@@ -105,7 +123,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()) {
-                        startActivity(new Intent(MainActivity.this, Homepage.class));
+
+                        Intent postLoginIntent = new Intent(MainActivity.this, Homepage.class);
+                        postLoginIntent.putExtra("uid", user.getUid());
+                        startActivity(postLoginIntent);
+
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Please check your email to " +

@@ -3,4 +3,7 @@
     <string name="donateButton">Donate Now</string>
     <string name="item">Item</string>
     <string name="string_item" />
+    <string name="donation_amount">Donation Amount</string>
+    <string name="donate_now_button_label">Donate Now</string>
+
 </resources>

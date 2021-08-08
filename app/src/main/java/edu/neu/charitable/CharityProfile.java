@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -17,7 +19,10 @@ public class CharityProfile  extends AppCompatActivity {
     String charityName;
     String charityLocation;
     String charityMission;
+    String uidLoggedIn;
     int logoId;
+
+    String TAG = "CharityProfile";
 
 
     @Override
@@ -25,8 +30,9 @@ public class CharityProfile  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.charity_profile);
 
-        // Get name of the Charity
+        // Get name of the Charity and user
         retrieveCharityData();
+        uidLoggedIn = getIntent().getStringExtra("uid");
 
         TextView charityNameTextView = findViewById(R.id.charityName);
         charityNameTextView.setText(charityName);
@@ -49,8 +55,12 @@ public class CharityProfile  extends AppCompatActivity {
 
         switch (v.getId()) {
             case R.id.donateButton:
-                Intent letterActivityIntent = new Intent(this, CharityProfile.class);
-                startActivity(letterActivityIntent);
+                Intent donationActivity = new Intent(this, DonationActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("CHARITY_NAME", charityName);
+                extras.putString("uid", uidLoggedIn);
+                donationActivity.putExtras(extras);
+                startActivity(donationActivity);
                 break;
 
 //            case R.id.__:
@@ -69,10 +79,6 @@ public class CharityProfile  extends AppCompatActivity {
         charityLocation = "Boston, MA, USA";
         charityMission = "Saving the lives of puppies and kittens since 1975.";
         logoId = R.drawable.aspca_logo;
-
-
-
-
 
     }
 

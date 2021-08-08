@@ -13,15 +13,21 @@
         <activity android:name=".ForgotPassword" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".RegisterUser" />
+        <activity android:name=".DonationActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity android:name=".Homepage">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".CharityProfile">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>

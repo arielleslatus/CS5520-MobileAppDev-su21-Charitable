@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/layout/charity_profile.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/activity_make_donation.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/charity_profile.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/donation_card.xml" value="1.7553412657802678" />
+        <entry key="app/src/main/res/layout/donation_request_card.xml" value="0.489872138890871" />
+        <entry key="app/src/main/res/layout/item_simple_itemview.xml" value="0.28020833333333334" />
       </map>
     </option>
   </component>
