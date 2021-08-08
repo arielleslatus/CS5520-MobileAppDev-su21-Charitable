@@ -65,6 +65,7 @@ public class Timeline extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
+
         Button button = (Button) view.findViewById(R.id.go_donate);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
