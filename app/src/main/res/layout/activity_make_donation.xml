@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClick"
-        android:text="donateNowButton"
+        android:text="@string/donate_now_button_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,10 +22,19 @@
         android:layout_height="wrap_content"
         android:autofillHints="5"
         android:ems="10"
-        android:hint="Donation Amount"
+        android:hint="@string/donation_amount"
         android:inputType="number"
         android:minHeight="48dp"
+        android:textColorHint="@color/secondary_text"
         app:layout_constraintBottom_toTopOf="@+id/donateNowButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/CharityNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/donationAmount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

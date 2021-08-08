@@ -19,6 +19,7 @@ public class CharityProfile  extends AppCompatActivity {
     String charityName;
     String charityLocation;
     String charityMission;
+    String uidLoggedIn;
     int logoId;
 
     String TAG = "CharityProfile";
@@ -29,8 +30,9 @@ public class CharityProfile  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.charity_profile);
 
-        // Get name of the Charity
+        // Get name of the Charity and user
         retrieveCharityData();
+        uidLoggedIn = getIntent().getStringExtra("uid");
 
         TextView charityNameTextView = findViewById(R.id.charityName);
         charityNameTextView.setText(charityName);
@@ -53,10 +55,12 @@ public class CharityProfile  extends AppCompatActivity {
 
         switch (v.getId()) {
             case R.id.donateButton:
-                Log.d(TAG, "Clicked donate button");
-                Intent letterActivityIntent = new Intent(this, DonationActivity.class);
-                letterActivityIntent.putExtra("CHARITY_NAME", charityName);
-                startActivity(letterActivityIntent);
+                Intent donationActivity = new Intent(this, DonationActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("CHARITY_NAME", charityName);
+                extras.putString("uid", uidLoggedIn);
+                donationActivity.putExtras(extras);
+                startActivity(donationActivity);
                 break;
 
 //            case R.id.__:
@@ -75,8 +79,6 @@ public class CharityProfile  extends AppCompatActivity {
         charityLocation = "Boston, MA, USA";
         charityMission = "Saving the lives of puppies and kittens since 1975.";
         logoId = R.drawable.aspca_logo;
-
-
 
     }
 

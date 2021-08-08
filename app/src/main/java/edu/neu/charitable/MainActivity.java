@@ -78,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.debugButton:
                 Log.d(TAG, "Clicked debug button");
-                startActivity(new Intent(this, CharityProfile.class));
+                Intent debugIntent = new Intent(this, CharityProfile.class);
+                debugIntent.putExtra("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
+                startActivity(debugIntent);
                 break;
         }
 
@@ -121,7 +123,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()) {
-                        startActivity(new Intent(MainActivity.this, Homepage.class));
+
+                        Intent postLoginIntent = new Intent(MainActivity.this, Homepage.class);
+                        postLoginIntent.putExtra("uid", user.getUid());
+                        startActivity(postLoginIntent);
+
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Please check your email to " +

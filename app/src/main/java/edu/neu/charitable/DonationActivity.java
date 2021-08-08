@@ -19,18 +19,26 @@ import java.text.ParseException;
 public class DonationActivity extends AppCompatActivity {
 
     EditText donationAmountView;
+    TextView charityNameTextview;
     private DatabaseReference mDatabase;
     String charityName;
+    String uidLoggedIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_donation);
-        String charityName = getIntent().getStringExtra("CHARITY_NAME");
+
+        Bundle extras = getIntent().getExtras();
+        charityName = extras.getString("CHARITY_NAME");
+        uidLoggedIn = extras.getString("uid");
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         donationAmountView = (EditText) findViewById(R.id.donationAmount);
+
+        charityNameTextview = (TextView) findViewById(R.id.CharityNameText);
+        charityNameTextview.setText("Donating to: " + charityName);
 
 
     }
@@ -59,10 +67,13 @@ public class DonationActivity extends AppCompatActivity {
         }
 
 
-        Transaction newTransaction = new Transaction(paymentValue, "CharityName",
+        Transaction newTransaction = new Transaction(paymentValue, charityName,
                 "userID");
 
         mDatabase.child("transactions").setValue(newTransaction);
+
+        Toast.makeText(DonationActivity.this, "Donation made:" + paymentValue + "from"
+                + uidLoggedIn + " to " + charityName, Toast.LENGTH_LONG).show();
 
         return false;
     }
