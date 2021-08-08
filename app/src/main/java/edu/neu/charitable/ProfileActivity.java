@@ -79,12 +79,17 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ProfileActivity.this, "Somthing wrong happened!",
+                Toast.makeText(ProfileActivity.this, "Something wrong happened!",
                         Toast.LENGTH_LONG).show();
 
 
             }
         });
+    }
+
+    public void navigateToSecurityPreferences(View view) {
+        startActivity(new Intent(this, SecurityPreferences.class));
+
     }
 
 
