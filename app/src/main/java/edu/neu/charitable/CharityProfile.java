@@ -50,6 +50,7 @@ public class CharityProfile  extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.donateButton:
                 Intent letterActivityIntent = new Intent(this, CharityProfile.class);
+                letterActivityIntent.putExtra("CHARITY_NAME", charityName);
                 startActivity(letterActivityIntent);
                 break;
 
@@ -69,8 +70,6 @@ public class CharityProfile  extends AppCompatActivity {
         charityLocation = "Boston, MA, USA";
         charityMission = "Saving the lives of puppies and kittens since 1975.";
         logoId = R.drawable.aspca_logo;
-
-
 
 
 
