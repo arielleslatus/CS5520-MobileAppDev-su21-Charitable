@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -18,6 +20,8 @@ public class CharityProfile  extends AppCompatActivity {
     String charityLocation;
     String charityMission;
     int logoId;
+
+    String TAG = "CharityProfile";
 
 
     @Override
@@ -49,7 +53,8 @@ public class CharityProfile  extends AppCompatActivity {
 
         switch (v.getId()) {
             case R.id.donateButton:
-                Intent letterActivityIntent = new Intent(this, CharityProfile.class);
+                Log.d(TAG, "Clicked donate button");
+                Intent letterActivityIntent = new Intent(this, DonationActivity.class);
                 letterActivityIntent.putExtra("CHARITY_NAME", charityName);
                 startActivity(letterActivityIntent);
                 break;
