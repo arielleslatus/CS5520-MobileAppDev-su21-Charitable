@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -107,11 +108,15 @@ public class Timeline extends Fragment {
         adapter = new FeedRecyclerViewAdapter(posts);
         rvPosts.setAdapter(adapter);
 
+        load(view);
+
         return view;
     }
 
     private void load(View view) {
         String username = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        //Toast.makeText(getActivity(), username, Toast.LENGTH_LONG).show();
 
         //get friends and get all posts for each
         ArrayList<String> friends = new ArrayList<>();
@@ -121,6 +126,7 @@ public class Timeline extends Fragment {
                 if (snapshot.exists()) {
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         friends.add(ds.getValue(String.class));
+                        //Toast.makeText(getActivity(), "found friends", Toast.LENGTH_LONG).show();
                     }
                 }
 

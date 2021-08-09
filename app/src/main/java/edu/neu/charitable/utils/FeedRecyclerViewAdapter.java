@@ -50,13 +50,13 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             return new FeedRecyclerViewAdapter.LoadingViewHolder(view);
         } else if (viewType == VIEW_TYPE_DONATION) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_donation, parent, false);
-            return new FeedRecyclerViewAdapter.LoadingViewHolder(view);
+            return new FeedRecyclerViewAdapter.DonationViewHolder(view);
         } else if (viewType == VIEW_TYPE_MATCH) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_match, parent, false);
-            return new FeedRecyclerViewAdapter.LoadingViewHolder(view);
+            return new FeedRecyclerViewAdapter.MatchViewHolder(view);
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_goal, parent, false);
-            return new FeedRecyclerViewAdapter.LoadingViewHolder(view);
+            return new FeedRecyclerViewAdapter.GoalAcheivedViewHolder(view);
         }
     }
 
@@ -75,6 +75,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             String username = FirebaseAuth.getInstance()
                     .getCurrentUser()
                     .getUid();
+
             FirebaseDatabase.getInstance().getReference("Users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -133,7 +134,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), error.toString(), Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -284,7 +285,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             });
 
         } else {
-            ((FeedRecyclerViewAdapter.LoadingViewHolder) holder).progressBar.setVisibility(View.VISIBLE);
+            //((FeedRecyclerViewAdapter.LoadingViewHolder) holder).progressBar.setVisibility(View.VISIBLE);
         }
     }
 
