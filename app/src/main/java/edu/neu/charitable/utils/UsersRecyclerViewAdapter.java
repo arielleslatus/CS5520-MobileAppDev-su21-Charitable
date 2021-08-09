@@ -1,5 +1,6 @@
 package edu.neu.charitable.utils;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,7 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             TextView userCity = ((ItemViewHolder) holder).userCity;
 
             userName.setText(user.fullName);
-            userHandle.setText(user.username);
+            userHandle.setText("@" + user.username);
             userCity.setText(user.city);
 
 
@@ -73,16 +74,45 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                             .getCurrentUser()
                             .getUid();
 
+                    //get DB id for other user
                     mDB.getReference("username_id").child(user.username).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
                                 String other_user = (String) snapshot.getValue();
 
-                                mDB.getReference("user_friends").child(this_user).push().setValue(other_user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                //checking if friend exists
+                                mDB.getReference("user_friends").child(this_user).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        Toast.makeText( ((ItemViewHolder) holder).userCard.getContext(), "Friend Added", Toast.LENGTH_LONG).show();
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.exists()) {
+                                            Boolean friend_exists = false;
+                                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                                if (ds.exists()) {
+                                                    String found = ds.getValue(String.class);
+                                                    if (found.equals(other_user) || found.equals(this_user)) {
+                                                        friend_exists = true;
+                                                    }
+                                                }
+                                            }
+
+                                            //add friend
+                                            if (!friend_exists) {
+                                                mDB.getReference("user_friends").child(this_user).push().setValue(other_user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        Toast.makeText( ((ItemViewHolder) holder).userCard.getContext(), "Friend Added", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                            } else {
+                                                Toast.makeText( ((ItemViewHolder) holder).userCard.getContext(), "Friend already added", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
                                     }
                                 });
                             }

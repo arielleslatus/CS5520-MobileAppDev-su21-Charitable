@@ -36,6 +36,8 @@
                     android:id="@+id/add_user"
                     android:drawableTop="@drawable/ic_baseline_person_add_24"
                     android:text="@string/add"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/round"
                     />
 
             </RelativeLayout>

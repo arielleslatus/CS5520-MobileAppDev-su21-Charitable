@@ -69,6 +69,7 @@ public class DonateDummy extends AppCompatActivity {
         charity = editTextCharity.getText().toString();
         if (charity.isEmpty()) {
             editTextCharity.setError("Need a Charity Name");
+            editTextCharity.requestFocus();
         }
 
 
@@ -111,7 +112,7 @@ public class DonateDummy extends AppCompatActivity {
                     Post post = new Post(don.timestamp, "donation", username, charity, "", amount, "", 0);
                     updatePosts(post, username);
                     updateGoal(don, username);
-
+                    startActivity(new Intent(DonateDummy.this, Home.class));
                 } else {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(DonateDummy.this, "Donation Failed", Toast.LENGTH_LONG).show();

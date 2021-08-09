@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -148,21 +149,24 @@ public class Search extends Fragment {
                     //username exists in db
                     if (snapshot.exists()) {
                         String id = snapshot.getValue(String.class);
-                        mDB.getReference("Users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    users.add(snapshot.getValue(User.class));
-                                    adapter.notifyDataSetChanged();
-                                    progressBar.setVisibility(View.GONE);
+
+                        if (!id.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            mDB.getReference("Users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        users.add(snapshot.getValue(User.class));
+                                        adapter.notifyDataSetChanged();
+                                        progressBar.setVisibility(View.GONE);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
 
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
                 }
 

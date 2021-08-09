@@ -25,9 +25,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import edu.neu.charitable.DonateDummy;
 import edu.neu.charitable.R;
+import edu.neu.charitable.SetGoal;
 import edu.neu.charitable.models.Charity;
 import edu.neu.charitable.models.Goal;
 import edu.neu.charitable.models.Post;
@@ -53,6 +56,7 @@ public class Timeline extends Fragment {
     private ImageView charityImage;
     private TextView goalText;
     private ProgressBar goalProgress;
+    private Button goalSet;
 
     private ArrayList<Post> posts;
     private RecyclerView rvPosts;
@@ -101,6 +105,7 @@ public class Timeline extends Fragment {
         charityImage = view.findViewById(R.id.charityImage);
         goalText = view.findViewById(R.id.goal_name);
         goalProgress = view.findViewById(R.id.goal_bar);
+        goalSet = view.findViewById(R.id.new_goal);
 
         rvPosts = view.findViewById(R.id.feed_rv);
         rvPosts.hasFixedSize();
@@ -108,9 +113,20 @@ public class Timeline extends Fragment {
         adapter = new FeedRecyclerViewAdapter(posts);
         rvPosts.setAdapter(adapter);
 
+        addListeners(view);
+
         load(view);
 
         return view;
+    }
+
+    private void addListeners(View view) {
+        goalSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), SetGoal.class));
+            }
+        });
     }
 
     private void load(View view) {
@@ -137,6 +153,13 @@ public class Timeline extends Fragment {
                             for (DataSnapshot ds : snapshot.getChildren()) {
                                 posts.add(ds.getValue(Post.class));
                             }
+
+                            posts.sort(new Comparator<Post>() {
+                                @Override
+                                public int compare(Post o1, Post o2) {
+                                    return Long.compare(o2.timestamp, o1.timestamp);
+                                }
+                            });
                             adapter.notifyDataSetChanged();
                         }
 

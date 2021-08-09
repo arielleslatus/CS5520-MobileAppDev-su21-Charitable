@@ -88,6 +88,8 @@
                             android:textSize="10sp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="5dp"
+                            android:background="@drawable/round"
+                            android:layout_marginTop="5dp"
                             />
                     </RelativeLayout>
 
@@ -107,6 +109,8 @@
                             android:textSize="10sp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="5dp"
+                            android:background="@drawable/round"
+                            android:layout_marginTop="5dp"
                             />
                     </RelativeLayout>
 
@@ -120,9 +124,14 @@
                             android:shape="oval"
                             android:layout_centerInParent="true"
                             android:id="@+id/new_goal"
-                            android:drawableTop="@drawable/ic_baseline_add_24"
+                            android:drawableStart="@drawable/ic_baseline_add_24"
+                            android:text="NEW"
+                            android:textSize="10sp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="5dp"
+                            android:background="@drawable/round"
+                            android:layout_marginTop="5dp"
+                            android:gravity="center"
                             />
                     </RelativeLayout>
 

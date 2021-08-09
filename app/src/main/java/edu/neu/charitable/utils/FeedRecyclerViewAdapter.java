@@ -1,5 +1,7 @@
 package edu.neu.charitable.utils;
 
+import android.content.Intent;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,9 +25,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.security.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.TimeZone;
 
+import edu.neu.charitable.DonateDummy;
+import edu.neu.charitable.Home;
 import edu.neu.charitable.R;
+import edu.neu.charitable.fragments.Timeline;
 import edu.neu.charitable.models.Post;
 import edu.neu.charitable.models.User;
 
@@ -69,6 +80,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             Button buttonShare = ((DonationViewHolder) holder).buttonShare;
             Button buttonApplaud = ((DonationViewHolder) holder).buttonApplaud;
             TextView postText = ((DonationViewHolder) holder).postText;
+            TextView timeText = ((DonationViewHolder) holder).timeText;
             CardView donationPostCard = ((DonationViewHolder) holder).donationPostCard;
 
 
@@ -76,12 +88,16 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                     .getCurrentUser()
                     .getUid();
 
-            FirebaseDatabase.getInstance().getReference("Users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
                         User u = snapshot.getValue(User.class);
-                        postText.setText(u.username + " donated to " + post.charity + "!");
+                        postText.setText("@" + u.username + " donated to " + post.charity + "!");
+
+                        LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                        timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
 
                         /*
                         buttonMatch.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +119,10 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if (snapshot.exists()) {
-                                            String postKey = snapshot.getKey();
+                                            String postKey = "";
+                                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                                postKey = ds.getKey();
+                                            }
                                             Post newPost = new Post(post.timestamp,post.type,post.user,post.charity,post.matchedUser,post.amount,post.text,post.numApplauds + 1);
                                             FirebaseDatabase.getInstance().getReference("user_posts")
                                                     .child(post.user)
@@ -112,6 +131,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), "Successfully Applauded", Toast.LENGTH_LONG).show();
+                                                    Intent intent = new Intent(v.getContext(), Home.class);
+                                                    v.getContext().startActivity(intent);
                                                 }
                                             });
                                         }
@@ -314,17 +335,18 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         public Button buttonShare;
         public Button buttonApplaud;
         public TextView postText;
+        public TextView timeText;
         public CardView donationPostCard;
 
         public DonationViewHolder(@NonNull View itemView) {
             super(itemView);
 
             postText = (TextView) itemView.findViewById(R.id.donation_text);
+            timeText = (TextView) itemView.findViewById(R.id.donation_time_applauds);
             buttonMatch = (Button) itemView.findViewById(R.id.donation_match);
             buttonShare= (Button) itemView.findViewById(R.id.donation_share);
             buttonApplaud = (Button) itemView.findViewById(R.id.donation_applaud);
             donationPostCard = (CardView) itemView.findViewById(R.id.donation_card);
-
         }
     }
 
