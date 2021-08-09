@@ -96,6 +96,8 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
                 }
             });
+
+
         } else if (holder instanceof LoadingViewHolder) {
             ((LoadingViewHolder) holder).progressBar.setVisibility(View.VISIBLE);
         }

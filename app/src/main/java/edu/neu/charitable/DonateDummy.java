@@ -3,6 +3,7 @@ package edu.neu.charitable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -37,6 +38,20 @@ public class DonateDummy extends AppCompatActivity {
         editTextCharity = (EditText) findViewById(R.id.donate_charity);
         editTextAmount = (EditText) findViewById(R.id.donate_amount);
         progressBar = (ProgressBar) findViewById(R.id.donate_progressBar);
+
+        String donate_to = getIntent().getStringExtra("AUTOFILL_CHARITY");
+        if (donate_to != null && !donate_to.isEmpty()) {
+            editTextCharity.setText(donate_to);
+        }
+
+        String donate_amount = getIntent().getStringExtra("AUTOFILL_AMOUNT");
+        if (donate_amount != null && !donate_amount.isEmpty()) {
+            editTextAmount.setText(donate_amount);
+        }
+    }
+
+    public void back(View view) {
+        startActivity(new Intent(this, Home.class));
     }
 
     public void donate(View view) {

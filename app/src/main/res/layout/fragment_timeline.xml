@@ -5,17 +5,60 @@
     android:layout_height="match_parent"
     tools:context=".fragments.Timeline">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="timeline" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5">
+            <TextView
+                android:id="@+id/my_goal_banner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="My Goal"
+                android:textStyle="bold"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+                <include layout="@layout/item_goal_for_feed"/>
+            </RelativeLayout>
+        </RelativeLayout>
 
 
-    <Button
-        android:id="@+id/go_donate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="donate"/>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5">
+            <TextView
+                android:id="@+id/my_feed_banner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="My Feed"
+                android:textStyle="bold"
+                />
+        </RelativeLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/feed_rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="70"/>
+
+    </LinearLayout>
 
 </FrameLayout>

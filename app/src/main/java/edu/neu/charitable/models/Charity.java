@@ -19,6 +19,10 @@ public class Charity {
     public String url;
     public String ein;
 
+    public Charity() {
+
+    }
+
     public Charity(CharityString c) {
 
         try {
