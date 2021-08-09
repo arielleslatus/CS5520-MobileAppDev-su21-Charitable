@@ -71,21 +71,10 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/city" />
 
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="315dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:textSize="14sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email" />
+
 
     <Button
-        android:id="@+id/updateProfile"
+        android:id="@+id/saveProfile"
         android:layout_width="209dp"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
@@ -96,7 +85,7 @@
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
+        app:layout_constraintTop_toBottomOf="@+id/email" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
