@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_goal_progress"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        app:cardElevation="1dp"
+        app:cardCornerRadius="20dp"
+        android:layout_margin="10dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardMaxElevation="3dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="80"
+                android:orientation="vertical"
+                android:weightSum="100">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="30">
+
+                    <TextView
+                        android:id="@+id/goal_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:text="No Goal Set"
+                        android:textStyle="bold"
+                        android:textSize="16sp"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="30">
+
+                    <ProgressBar
+                        android:id="@+id/goal_bar"
+                        style="@android:style/Widget.ProgressBar.Horizontal"
+                        android:layout_width="fill_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:layout_height="10dp"
+                        android:layout_centerInParent="true"
+                        android:progress="0"/>
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="40"
+                    android:weightSum="100"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="33">
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:shape="oval"
+                            android:layout_centerInParent="true"
+                            android:id="@+id/donate_goal_one"
+                            android:drawableLeft="@drawable/ic_baseline_attach_money_24"
+                            android:text="5"
+                            android:textAlignment="viewStart"
+                            android:textSize="10sp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="5dp"
+                            />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="33">
+                        <Button
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:shape="oval"
+                            android:layout_centerInParent="true"
+                            android:id="@+id/donate_goal_two"
+                            android:drawableLeft="@drawable/ic_baseline_attach_money_24"
+                            android:text="10"
+                            android:textAlignment="viewStart"
+                            android:textSize="10sp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="5dp"
+                            />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="33">
+                        <Button
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:shape="oval"
+                            android:layout_centerInParent="true"
+                            android:id="@+id/new_goal"
+                            android:drawableTop="@drawable/ic_baseline_add_24"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="5dp"
+                            />
+                    </RelativeLayout>
+
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="20">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/charityImage"
+                    android:src="@drawable/ic_baseline_campaign_24"
+                    android:scaleType="fitCenter"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+
+
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
