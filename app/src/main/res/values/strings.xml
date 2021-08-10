@@ -16,4 +16,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="donate">DONATE</string>
+    <string name="pick_a_charity">Pick a Charity</string>
+    <string name="select_amount">Select amount</string>
+    <string name="exhaust">~</string>
 </resources>
