@@ -20,4 +20,6 @@
     <string name="pick_a_charity">Pick a Charity</string>
     <string name="select_amount">Select amount</string>
     <string name="exhaust">~</string>
+    <string name="_10">10</string>
+    <string name="_5">5</string>
 </resources>

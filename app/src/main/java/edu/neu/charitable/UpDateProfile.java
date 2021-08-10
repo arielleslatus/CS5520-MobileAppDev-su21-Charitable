@@ -25,6 +25,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.neu.charitable.models.User;
+
 public class UpDateProfile extends AppCompatActivity {
 
     public static final String TAG = "TAG";
