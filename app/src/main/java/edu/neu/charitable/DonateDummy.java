@@ -27,6 +27,8 @@ public class DonateDummy extends AppCompatActivity {
     private EditText editTextCharity, editTextAmount;
     private ProgressBar progressBar;
     private FirebaseDatabase mDB;
+    private boolean isMatch;
+    private String matchTo;
 
 
     @Override
@@ -47,6 +49,14 @@ public class DonateDummy extends AppCompatActivity {
         String donate_amount = getIntent().getStringExtra("AUTOFILL_AMOUNT");
         if (donate_amount != null && !donate_amount.isEmpty()) {
             editTextAmount.setText(donate_amount);
+        }
+
+        String match = getIntent().getStringExtra("MATCH");
+        if (match != null) {
+            isMatch = true;
+            matchTo = match;
+        } else {
+            isMatch = false;
         }
     }
 
@@ -108,10 +118,14 @@ public class DonateDummy extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(DonateDummy.this, "Donation Received", Toast.LENGTH_LONG).show();
-
-                    Post post = new Post(don.timestamp, "donation", username, charity, "", amount, "", 0);
+                    Post post;
+                    if (isMatch) {
+                        post = new Post(don.timestamp, "match", username, charity, matchTo, amount, "", 0);
+                    } else {
+                        post = new Post(don.timestamp, "donation", username, charity, "", amount, "", 0);
+                    }
                     updatePosts(post, username);
-                    updateGoal(don, username);
+                    updateGoal(don, username, charity);
                     startActivity(new Intent(DonateDummy.this, Home.class));
                 } else {
                     progressBar.setVisibility(View.GONE);
@@ -134,7 +148,7 @@ public class DonateDummy extends AppCompatActivity {
         });
     }
 
-    private void updateGoal(Donation don, String username) {
+    private void updateGoal(Donation don, String username, String chrName) {
         mDB.getReference("user_goal").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -143,10 +157,10 @@ public class DonateDummy extends AppCompatActivity {
                     float newAmount = goal.amoundDonated + don.amount;
 
                     if (!goal.complete) {
-                        if (newAmount >= goal.amountSet - .000001) {
+                        if (newAmount >= goal.amountSet - .001) {
                             goal.amoundDonated = goal.amountSet;
                             goal.complete = true;
-                            goalComplete(goal, username);
+                            goalComplete(goal, username, chrName);
                         } else {
                             goal.amoundDonated = newAmount;
                         }
@@ -162,14 +176,14 @@ public class DonateDummy extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(DonateDummy.this, error.toString(), Toast.LENGTH_LONG).show();
 
             }
         });
     }
 
-    private void goalComplete(Goal goal, String username) {
-        Post post = new Post("goal_complete",username,goal.charity,"",goal.amountSet,"",0);
+    private void goalComplete(Goal goal, String username, String chrName) {
+        Post post = new Post("goal_complete",username,chrName,"",goal.amountSet,"",0);
+        Toast.makeText(DonateDummy.this, "You've completed your goal!!!", Toast.LENGTH_LONG).show();
         updatePosts(post, username);
     }
 }

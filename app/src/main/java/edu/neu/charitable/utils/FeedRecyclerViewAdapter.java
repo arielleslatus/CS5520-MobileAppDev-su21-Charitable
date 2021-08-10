@@ -74,238 +74,20 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof FeedRecyclerViewAdapter.DonationViewHolder) {
-            Post post = posts.get(position);
 
-            Button buttonMatch = ((DonationViewHolder) holder).buttonMatch;
-            Button buttonShare = ((DonationViewHolder) holder).buttonShare;
-            Button buttonApplaud = ((DonationViewHolder) holder).buttonApplaud;
-            TextView postText = ((DonationViewHolder) holder).postText;
-            TextView timeText = ((DonationViewHolder) holder).timeText;
-            CardView donationPostCard = ((DonationViewHolder) holder).donationPostCard;
-
-
-            String username = FirebaseAuth.getInstance()
-                    .getCurrentUser()
-                    .getUid();
-
-            FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        User u = snapshot.getValue(User.class);
-                        postText.setText("@" + u.username + " donated to " + post.charity + "!");
-
-                        LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
-                        timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
-
-                        /*
-                        buttonMatch.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //
-                            }
-                        });
-                         */
-
-                        buttonApplaud.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                FirebaseDatabase.getInstance().getReference("user_posts")
-                                        .child(post.user)
-                                        .orderByChild("timestamp")
-                                        .equalTo(post.timestamp)
-                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if (snapshot.exists()) {
-                                            String postKey = "";
-                                            for (DataSnapshot ds : snapshot.getChildren()) {
-                                                postKey = ds.getKey();
-                                            }
-                                            Post newPost = new Post(post.timestamp,post.type,post.user,post.charity,post.matchedUser,post.amount,post.text,post.numApplauds + 1);
-                                            FirebaseDatabase.getInstance().getReference("user_posts")
-                                                    .child(post.user)
-                                                    .child(postKey)
-                                                    .setValue(newPost).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), "Successfully Applauded", Toast.LENGTH_LONG).show();
-                                                    Intent intent = new Intent(v.getContext(), Home.class);
-                                                    v.getContext().startActivity(intent);
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-                            }
-                        });
-
-
-
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), error.toString(), Toast.LENGTH_LONG).show();
-                }
-            });
+            bindDonationView(holder, position);
 
         } else if (holder instanceof FeedRecyclerViewAdapter.MatchViewHolder) {
 
-            Post post = posts.get(position);
-
-            Button buttonShare = ((MatchViewHolder) holder).buttonShare;
-            Button buttonApplaud = ((MatchViewHolder) holder).buttonApplaud;
-            TextView postText = ((MatchViewHolder) holder).postText;
-            CardView donationPostCard = ((MatchViewHolder) holder).donationPostCard;
-
-
-            String username = FirebaseAuth.getInstance()
-                    .getCurrentUser()
-                    .getUid();
-            FirebaseDatabase.getInstance().getReference("Users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        User u = snapshot.getValue(User.class);
-                        postText.setText(u.username + " matched a dontation to " + post.charity + "!");
-
-                        /*
-                        buttonMatch.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //
-                            }
-                        });
-                         */
-
-                        buttonApplaud.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                FirebaseDatabase.getInstance().getReference("user_posts")
-                                        .child(post.user)
-                                        .orderByChild("timestamp")
-                                        .equalTo(post.timestamp)
-                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if (snapshot.exists()) {
-                                                    String postKey = snapshot.getKey();
-                                                    Post newPost = new Post(post.timestamp,post.type,post.user,post.charity,post.matchedUser,post.amount,post.text,post.numApplauds + 1);
-                                                    FirebaseDatabase.getInstance().getReference("user_posts")
-                                                            .child(post.user)
-                                                            .child(postKey)
-                                                            .setValue(newPost).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            Toast.makeText(((MatchViewHolder) holder).donationPostCard.getContext(), "Successfully Applauded", Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                            }
-                        });
-
-
-
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+            bindMatchView(holder, position);
 
         } else if (holder instanceof FeedRecyclerViewAdapter.GoalAcheivedViewHolder) {
 
-            Post post = posts.get(position);
-
-            Button buttonShare = ((GoalAcheivedViewHolder) holder).buttonShare;
-            Button buttonApplaud = ((GoalAcheivedViewHolder) holder).buttonApplaud;
-            TextView postText = ((GoalAcheivedViewHolder) holder).postText;
-            CardView donationPostCard = ((GoalAcheivedViewHolder) holder).donationPostCard;
-
-
-            String username = FirebaseAuth.getInstance()
-                    .getCurrentUser()
-                    .getUid();
-            FirebaseDatabase.getInstance().getReference("Users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        User u = snapshot.getValue(User.class);
-                        postText.setText(u.username + " acheived their goal for " + post.charity + "!");
-
-                        /*
-                        buttonMatch.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //
-                            }
-                        });
-                         */
-
-                        buttonApplaud.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                FirebaseDatabase.getInstance().getReference("user_posts")
-                                        .child(post.user)
-                                        .orderByChild("timestamp")
-                                        .equalTo(post.timestamp)
-                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if (snapshot.exists()) {
-                                                    String postKey = snapshot.getKey();
-                                                    Post newPost = new Post(post.timestamp,post.type,post.user,post.charity,post.matchedUser,post.amount,post.text,post.numApplauds + 1);
-                                                    FirebaseDatabase.getInstance().getReference("user_posts")
-                                                            .child(post.user)
-                                                            .child(postKey)
-                                                            .setValue(newPost).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            Toast.makeText(((GoalAcheivedViewHolder) holder).donationPostCard.getContext(), "Successfully Applauded", Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                            }
-                        });
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+            bindGoalAchievedView(holder, position);
 
         } else {
+
+            //this throws error?
             //((FeedRecyclerViewAdapter.LoadingViewHolder) holder).progressBar.setVisibility(View.VISIBLE);
         }
     }
@@ -355,12 +137,14 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         public Button buttonShare;
         public Button buttonApplaud;
         public TextView postText;
+        public TextView timeText;
         public CardView donationPostCard;
 
         public MatchViewHolder(@NonNull View itemView) {
             super(itemView);
 
             postText = (TextView) itemView.findViewById(R.id.match_text);
+            timeText = (TextView) itemView.findViewById(R.id.match_time);
             buttonShare= (Button) itemView.findViewById(R.id.match_share);
             buttonApplaud = (Button) itemView.findViewById(R.id.match_applaud);
             donationPostCard = (CardView) itemView.findViewById(R.id.card_match);
@@ -373,6 +157,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         public Button buttonShare;
         public Button buttonApplaud;
         public TextView postText;
+        public TextView timeText;
         public CardView donationPostCard;
 
         public GoalAcheivedViewHolder(@NonNull View itemView) {
@@ -382,6 +167,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             buttonShare= (Button) itemView.findViewById(R.id.goal_share);
             buttonApplaud = (Button) itemView.findViewById(R.id.goal_applaud);
             donationPostCard = (CardView) itemView.findViewById(R.id.card_goal);
+            timeText = (TextView) itemView.findViewById(R.id.goal_time);
         }
     }
 
@@ -395,6 +181,155 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
+    private void bindDonationView(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Post post = posts.get(position);
 
+        Button buttonMatch = ((DonationViewHolder) holder).buttonMatch;
+        Button buttonShare = ((DonationViewHolder) holder).buttonShare;
+        Button buttonApplaud = ((DonationViewHolder) holder).buttonApplaud;
+        TextView postText = ((DonationViewHolder) holder).postText;
+        TextView timeText = ((DonationViewHolder) holder).timeText;
+        CardView donationPostCard = ((DonationViewHolder) holder).donationPostCard;
+
+
+        //Get user and fill in information this set listeners for the buttons
+        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User u = snapshot.getValue(User.class);
+                    postText.setText("@" + u.username + " donated to " + post.charity + "!");
+
+                    LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                    timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+                    applaudListener(holder, buttonApplaud, post);
+                    matchOnClickListener(holder, buttonMatch, post);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void bindGoalAchievedView(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Post post = posts.get(position);
+
+        Button buttonShare = ((GoalAcheivedViewHolder) holder).buttonShare;
+        Button buttonApplaud = ((GoalAcheivedViewHolder) holder).buttonApplaud;
+        TextView postText = ((GoalAcheivedViewHolder) holder).postText;
+        TextView timeText = ((GoalAcheivedViewHolder) holder).timeText;
+        CardView donationPostCard = ((GoalAcheivedViewHolder) holder).donationPostCard;
+
+
+        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User u = snapshot.getValue(User.class);
+                    postText.setText("@" + u.username + " acheived their goal for " + post.charity + "!");
+
+                    LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                    timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+                    applaudListener(holder, buttonApplaud, post);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void bindMatchView(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Post post = posts.get(position);
+
+        Button buttonShare = ((MatchViewHolder) holder).buttonShare;
+        Button buttonApplaud = ((MatchViewHolder) holder).buttonApplaud;
+        TextView postText = ((MatchViewHolder) holder).postText;
+        TextView timeText = ((MatchViewHolder) holder).timeText;
+        CardView donationPostCard = ((MatchViewHolder) holder).donationPostCard;
+
+
+
+        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User u = snapshot.getValue(User.class);
+                    postText.setText("@" + u.username + " matched a dontation to " + post.charity + "!");
+
+                    LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                    timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+                    applaudListener(holder, buttonApplaud, post);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+
+    //Adds onclick listener to applaud buttons generated in recyclerView
+    private void applaudListener(RecyclerView.ViewHolder holder, Button buttonApplaud, Post post) {
+        buttonApplaud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase.getInstance().getReference("user_posts")
+                        .child(post.user)
+                        .orderByChild("timestamp")
+                        .equalTo(post.timestamp)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    String postKey = "";
+                                    for (DataSnapshot ds : snapshot.getChildren()) {
+                                        postKey = ds.getKey();
+                                    }
+                                    Post newPost = new Post(post.timestamp,post.type,post.user,post.charity,post.matchedUser,post.amount,post.text,post.numApplauds + 1);
+                                    FirebaseDatabase.getInstance().getReference("user_posts")
+                                            .child(post.user)
+                                            .child(postKey)
+                                            .setValue(newPost).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Intent intent = new Intent(v.getContext(), Home.class);
+                                            v.getContext().startActivity(intent);
+                                        }
+                                    });
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+            }
+        });
+    }
+
+    private void matchOnClickListener(RecyclerView.ViewHolder holder, Button buttonMatch, Post post) {
+        buttonMatch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), DonateDummy.class);
+                intent.putExtra("AUTOFILL_CHARITY" ,post.charity);
+                intent.putExtra("AUTOFILL_AMOUNT", Float.toString(post.amount));
+                intent.putExtra("MATCH", post.user);
+                v.getContext().startActivity(intent);
+            }
+        });
+    }
 
 }
