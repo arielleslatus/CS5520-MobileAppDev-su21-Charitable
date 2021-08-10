@@ -62,4 +62,21 @@ public class Charity {
         this.ein = c.ein;
 
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof Charity)) {
+            return false;
+        }
+
+        Charity c = (Charity) o;
+
+        return (c.id == this.id && c.name.equals(this.name));
+
+    }
 }

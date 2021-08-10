@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import edu.neu.charitable.models.Charity;
 import edu.neu.charitable.models.Donation;
 import edu.neu.charitable.models.Goal;
 
@@ -76,13 +77,17 @@ public class SetGoal extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            Goal goal = new Goal(charity,amount,0);
-                            uploadGoal(goal);
-                        } else {
-                            editTextCharity.setError("Charity not found");
-                            editTextCharity.requestFocus();
-                            progressBar.setVisibility(View.GONE);
+                        //should be only one, but firebase returns parent key with this
+                        for (DataSnapshot sn : snapshot.getChildren()) {
+                            if (sn.exists()) {
+                                String cKey = sn.getKey();
+                                Goal goal = new Goal(cKey, amount, 0);
+                                uploadGoal(goal);
+                            } else {
+                                editTextCharity.setError("Charity not found");
+                                editTextCharity.requestFocus();
+                                progressBar.setVisibility(View.GONE);
+                            }
                         }
                     }
 

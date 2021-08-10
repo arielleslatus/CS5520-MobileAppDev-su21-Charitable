@@ -55,13 +55,20 @@ public class Timeline extends Fragment {
 
     private ImageView charityImage;
     private TextView goalText;
+    private TextView goalPercent;
     private ProgressBar goalProgress;
     private Button goalSet;
+    private Button donateOne;
+    private Button donateTwo;
 
     private ArrayList<Post> posts;
     private RecyclerView rvPosts;
     private FirebaseDatabase mDb;
-    FeedRecyclerViewAdapter adapter;
+    private FeedRecyclerViewAdapter adapter;
+
+    private Goal goal;
+
+    private String username;
 
     public Timeline() {
         // Required empty public constructor
@@ -95,6 +102,8 @@ public class Timeline extends Fragment {
 
         posts = new ArrayList<>();
         mDb = FirebaseDatabase.getInstance();
+
+        username = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     @Override
@@ -104,8 +113,12 @@ public class Timeline extends Fragment {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
         charityImage = view.findViewById(R.id.charityImage);
         goalText = view.findViewById(R.id.goal_name);
+        goalPercent = view.findViewById(R.id.goal_percent);
         goalProgress = view.findViewById(R.id.goal_bar);
         goalSet = view.findViewById(R.id.new_goal);
+
+        donateOne = view.findViewById(R.id.donate_goal_one);
+        donateTwo = view.findViewById(R.id.donate_goal_two);
 
         rvPosts = view.findViewById(R.id.feed_rv);
         rvPosts.hasFixedSize();
@@ -130,7 +143,6 @@ public class Timeline extends Fragment {
     }
 
     private void load(View view) {
-        String username = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         //Toast.makeText(getActivity(), username, Toast.LENGTH_LONG).show();
 
@@ -181,16 +193,17 @@ public class Timeline extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Goal goal = snapshot.getValue(Goal.class);
+                    goal = snapshot.getValue(Goal.class);
                     if (goal != null) {
                         mDb.getReference("Charities").child(goal.charity).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
                                     Charity ch = snapshot.getValue(Charity.class);
-                                    goalText.setText("Donate " + goal.amountSet + " to " + ch.name);
+                                    goalText.setText("Donate $" + goal.amountSet + " to " + ch.name);
+                                    goalPercent.setText(Integer.toString(Math.round( (goal.amoundDonated / goal.amountSet) * 100)) + "%");
                                     Picasso.get().load(ch.logoUrl).into(charityImage);
-                                    goalProgress.setProgress( Math.round( (goal.amountSet / goal.amoundDonated) * 100));
+                                    goalProgress.setProgress( Math.round( (goal.amoundDonated / goal.amountSet) * 100));
                                 }
                             }
 
@@ -208,6 +221,67 @@ public class Timeline extends Fragment {
 
             }
         });
+
+        donateOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (goal != null) {
+
+                    mDb.getReference("Charities").child(goal.charity).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                Charity c = snapshot.getValue(Charity.class);
+                                Intent intent = new Intent(v.getContext(), DonateDummy.class);
+                                intent.putExtra("AUTOFILL_CHARITY", c.name);
+                                intent.putExtra("AUTOFILL_AMOUNT", Double.toString(5.0));
+                                v.getContext().startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                }
+            }
+        });
+
+        donateTwo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (goal != null) {
+
+                    mDb.getReference("Charities").child(goal.charity).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                Charity c = snapshot.getValue(Charity.class);
+                                Intent intent = new Intent(v.getContext(), DonateDummy.class);
+                                intent.putExtra("AUTOFILL_CHARITY", c.name);
+                                intent.putExtra("AUTOFILL_AMOUNT", Double.toString(10.0));
+                                v.getContext().startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                }
+            }
+        });
+
+
+
+
+
     }
 
 

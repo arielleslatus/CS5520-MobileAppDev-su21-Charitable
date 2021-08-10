@@ -206,7 +206,10 @@ public class Search extends Fragment {
                             if (snapshot.exists()) {
                                 ArrayList<Charity> foundC = new ArrayList<>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    foundC.add(ds.getValue(Charity.class));
+                                    Charity c = ds.getValue(Charity.class);
+                                    if (!foundC.contains(c)) {
+                                        foundC.add(ds.getValue(Charity.class));
+                                    }
                                 }
                                 chars.addAll(foundC);
                                 adapterC.notifyDataSetChanged();
@@ -228,7 +231,10 @@ public class Search extends Fragment {
                             if (snapshot.exists()) {
                                 ArrayList<Charity> foundC = new ArrayList<>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    foundC.add(ds.getValue(Charity.class));
+                                    Charity c = ds.getValue(Charity.class);
+                                    if (!foundC.contains(c)) {
+                                        foundC.add(ds.getValue(Charity.class));
+                                    }
                                 }
                                 chars.addAll(foundC);
                                 adapterC.notifyDataSetChanged();
@@ -250,7 +256,10 @@ public class Search extends Fragment {
                             if (snapshot.exists()) {
                                 ArrayList<Charity> foundC = new ArrayList<>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    foundC.add(ds.getValue(Charity.class));
+                                    Charity c = ds.getValue(Charity.class);
+                                    if (!foundC.contains(c)) {
+                                        foundC.add(ds.getValue(Charity.class));
+                                    }
                                 }
                                 chars.addAll(foundC);
                                 adapterC.notifyDataSetChanged();
@@ -272,7 +281,10 @@ public class Search extends Fragment {
                             if (snapshot.exists()) {
                                 ArrayList<Charity> foundC = new ArrayList<>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    foundC.add(ds.getValue(Charity.class));
+                                    Charity c = ds.getValue(Charity.class);
+                                    if (!foundC.contains(c)) {
+                                        foundC.add(ds.getValue(Charity.class));
+                                    }
                                 }
                                 chars.addAll(foundC);
                                 adapterC.notifyDataSetChanged();
@@ -294,7 +306,10 @@ public class Search extends Fragment {
                             if (snapshot.exists()) {
                                 ArrayList<Charity> foundC = new ArrayList<>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    foundC.add(ds.getValue(Charity.class));
+                                    Charity c = ds.getValue(Charity.class);
+                                    if (!foundC.contains(c)) {
+                                        foundC.add(ds.getValue(Charity.class));
+                                    }
                                 }
                                 chars.addAll(foundC);
                                 adapterC.notifyDataSetChanged();
@@ -316,7 +331,10 @@ public class Search extends Fragment {
                             if (snapshot.exists()) {
                                 ArrayList<Charity> foundC = new ArrayList<>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    foundC.add(ds.getValue(Charity.class));
+                                    Charity c = ds.getValue(Charity.class);
+                                    if (!foundC.contains(c)) {
+                                        foundC.add(ds.getValue(Charity.class));
+                                    }
                                 }
                                 chars.addAll(foundC);
                                 adapterC.notifyDataSetChanged();
