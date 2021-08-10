@@ -182,7 +182,6 @@ public class DonateDummy extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
@@ -193,15 +192,17 @@ public class DonateDummy extends AppCompatActivity {
         updatePosts(post, username);
     }
 
+    //this is venmo's deeplink system
+    //if charity has a venmo, and user has venmo installed,
     private void linkToVenmo(Donation don, String charId) {
-        Toast.makeText(DonateDummy.this, charId, Toast.LENGTH_LONG).show();
+        //Toast.makeText(DonateDummy.this, charId, Toast.LENGTH_LONG).show();
         mDB.getReference("charity_venmo").child(charId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String venmoId = "";
                 if (snapshot.exists()) {
                     venmoId = snapshot.getValue(String.class);
-                    Toast.makeText(DonateDummy.this, venmoId, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(DonateDummy.this, venmoId, Toast.LENGTH_LONG).show();
                 }
 
                 if (venmoId != null && !venmoId.isEmpty()) {

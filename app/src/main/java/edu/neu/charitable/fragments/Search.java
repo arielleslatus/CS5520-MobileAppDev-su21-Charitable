@@ -127,7 +127,10 @@ public class Search extends Fragment {
 
                                 ArrayList<User> found = new ArrayList<User>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    found.add(ds.getValue(User.class));
+                                    User u = ds.getValue(User.class);
+                                    if(!found.contains(u)) {
+                                        found.add(ds.getValue(User.class));
+                                    }
                                 }
                                 users.addAll(found);
                                 adapter.notifyDataSetChanged();
@@ -184,7 +187,10 @@ public class Search extends Fragment {
                             if (snapshot.exists()) {
                                 ArrayList<User> found = new ArrayList<User>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {
-                                    found.add(ds.getValue(User.class));
+                                    User u = ds.getValue(User.class);
+                                    if(!found.contains(u)) {
+                                        found.add(ds.getValue(User.class));
+                                    }
                                 }
                                 users.addAll(found);
                                 adapter.notifyDataSetChanged();
