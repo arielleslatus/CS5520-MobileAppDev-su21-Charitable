@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -42,13 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        update = (Button) findViewById(R.id.upDate);
-        update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(ProfileActivity.this, UpDateProfile.class));
-            }
-        });
+
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
@@ -87,8 +82,19 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
-    }
 
+        update = (Button) findViewById(R.id.upDate);
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(v.getContext(), UpDateProfile.class);
+                i.putExtra("email",emailTextView.getText().toString());
+                i.putExtra("fullName", fullNameTextView.getText().toString());
+                i.putExtra("city",cityTextView.getText().toString());
+                startActivity(i);
+            }
+        });
+    }
     public void navigateToSecurityPreferences(View view) {
         startActivity(new Intent(this, SecurityPreferences.class));
 
