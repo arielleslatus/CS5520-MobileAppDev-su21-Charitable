@@ -65,7 +65,7 @@ public class CharitiesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
             charityName.setText(chr.name);
             charityUrl.setText(chr.url);
-            charityCity.setText(chr.city);
+            charityCity.setText(chr.city + " . " + chr.country);
 
 
             buttonDonate.setOnClickListener(new View.OnClickListener() {

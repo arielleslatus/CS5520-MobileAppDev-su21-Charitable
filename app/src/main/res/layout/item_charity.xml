@@ -36,6 +36,8 @@
                     android:id="@+id/add_charity"
                     android:drawableTop="@drawable/ic_baseline_playlist_add_24"
                     android:text="@string/add"
+                    android:background="@drawable/round"
+                    android:layout_marginTop="5dp"
                     />
 
             </RelativeLayout>
@@ -52,6 +54,8 @@
                     android:id="@+id/donate_charity"
                     android:drawableTop="@drawable/ic_baseline_attach_money_24"
                     android:text="@string/add"
+                    android:background="@drawable/round"
+                    android:layout_marginTop="5dp"
                     />
 
             </RelativeLayout>

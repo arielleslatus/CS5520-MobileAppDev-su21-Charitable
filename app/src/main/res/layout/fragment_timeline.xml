@@ -11,19 +11,52 @@
         android:orientation="vertical"
         android:weightSum="100">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="5">
-            <TextView
-                android:id="@+id/my_goal_banner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="My Goal"
-                android:textStyle="bold"
-                />
-        </RelativeLayout>
+            android:layout_weight="5"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".4">
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/green_dark" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".2">
+                <TextView
+                    android:id="@+id/my_goal_banner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="My Goal"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".4">
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/green_dark" />
+            </RelativeLayout>
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="fill_parent"
@@ -37,21 +70,52 @@
             </RelativeLayout>
         </RelativeLayout>
 
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="5">
-            <TextView
-                android:id="@+id/my_feed_banner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="My Feed"
-                android:textStyle="bold"
-                />
-        </RelativeLayout>
+            android:layout_weight="5"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".4">
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/green_dark" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".2">
+                <TextView
+                    android:id="@+id/my_feed_banner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="My Feed"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".4">
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/green_dark" />
+            </RelativeLayout>
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/feed_rv"

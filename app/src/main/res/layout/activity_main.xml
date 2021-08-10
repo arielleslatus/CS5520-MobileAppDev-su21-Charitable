@@ -74,7 +74,9 @@
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        android:background="@drawable/round"
+        />
 
     <TextView
         android:id="@+id/forgotPassword"
