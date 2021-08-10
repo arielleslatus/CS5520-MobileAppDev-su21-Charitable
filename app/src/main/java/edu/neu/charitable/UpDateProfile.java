@@ -71,7 +71,7 @@ public class UpDateProfile extends AppCompatActivity {
                 user.updateEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        User u = new User(email, profileFullName.getText().toString(), profileCity.getText().toString());
+                        User u = new User(profileFullName.getText().toString(), profileCity.getText().toString(), email);
 
                         reference.child(user.getUid()).setValue(u).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -84,8 +84,7 @@ public class UpDateProfile extends AppCompatActivity {
                             }
                         });
 
-                        Toast.makeText(UpDateProfile.this, "Email is changed", Toast.LENGTH_LONG).show();
-                        // this part is working, the email can be change in Authentication but not in the realtime database/phone
+                        //Toast.makeText(UpDateProfile.this, "Email is changed", Toast.LENGTH_LONG).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -102,7 +101,6 @@ public class UpDateProfile extends AppCompatActivity {
         profileFullName.setText(fullName);
         profileEmail.setText(email);
 
-        Log.d(TAG,"onCreate: " + fullName + " " + email + " " + city);
     }
 }
 
