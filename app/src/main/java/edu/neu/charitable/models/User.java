@@ -20,4 +20,21 @@ public class User {
         this.username = username;
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof User)) {
+            return false;
+        }
+
+        User c = (User) o;
+
+        return c.email.equals(this.email);
+
+    }
+
 }

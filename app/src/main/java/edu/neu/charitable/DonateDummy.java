@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -90,12 +91,17 @@ public class DonateDummy extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    String charId = "";
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        charId = ds.getKey();
+                    }
                         String username = FirebaseAuth.getInstance()
                                 .getCurrentUser()
                                 .getUid();
 
                     Donation don = new Donation(charity, username, amount);
                     makeDonation(don, username, charity, amount);
+                    linkToVenmo(don, charId);
                 } else {
                     editTextCharity.setError("Charity not found");
                     editTextCharity.requestFocus();
@@ -111,13 +117,13 @@ public class DonateDummy extends AppCompatActivity {
     }
 
     private void makeDonation(Donation don, String username, String charity, float amount) {
-        Toast.makeText(DonateDummy.this, "making donation", Toast.LENGTH_LONG).show();
+        //Toast.makeText(DonateDummy.this, "making donation", Toast.LENGTH_LONG).show();
         mDB.getReference().child("user_donations").child(username).push().setValue(don).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(DonateDummy.this, "Donation Received", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(DonateDummy.this, "Donation Received", Toast.LENGTH_LONG).show();
                     Post post;
                     if (isMatch) {
                         post = new Post(don.timestamp, "match", username, charity, matchTo, amount, "", 0);
@@ -140,7 +146,7 @@ public class DonateDummy extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(DonateDummy.this, "Shared", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(DonateDummy.this, "Shared", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(DonateDummy.this, "Failed to Share", Toast.LENGTH_LONG).show();
                 }
@@ -168,7 +174,7 @@ public class DonateDummy extends AppCompatActivity {
                     mDB.getReference("user_goal").child(username).setValue(goal).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            Toast.makeText(DonateDummy.this, "Goal Updated" ,Toast.LENGTH_LONG).show();
+                            //Toast.makeText(DonateDummy.this, "Goal Updated" ,Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -176,7 +182,6 @@ public class DonateDummy extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
@@ -185,5 +190,33 @@ public class DonateDummy extends AppCompatActivity {
         Post post = new Post("goal_complete",username,chrName,"",goal.amountSet,"",0);
         Toast.makeText(DonateDummy.this, "You've completed your goal!!!", Toast.LENGTH_LONG).show();
         updatePosts(post, username);
+    }
+
+    //this is venmo's deeplink system
+    //if charity has a venmo, and user has venmo installed,
+    private void linkToVenmo(Donation don, String charId) {
+        //Toast.makeText(DonateDummy.this, charId, Toast.LENGTH_LONG).show();
+        mDB.getReference("charity_venmo").child(charId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String venmoId = "";
+                if (snapshot.exists()) {
+                    venmoId = snapshot.getValue(String.class);
+                    //Toast.makeText(DonateDummy.this, venmoId, Toast.LENGTH_LONG).show();
+                }
+
+                if (venmoId != null && !venmoId.isEmpty()) {
+                    String note = "A donation to " + don.charity + "!";
+                    String url = "https://venmo.com/" + venmoId + "?txn=pay&note=" + note + "&amount=" + don.amount;
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(browserIntent);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }
