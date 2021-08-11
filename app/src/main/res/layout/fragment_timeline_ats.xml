@@ -36,10 +36,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/goalFragment"
             app:layout_constraintStart_toEndOf="@id/leftGoalLine"
-            app:layout_constraintEnd_toStartOf="@id/rightGoalLine"/>
+            app:layout_constraintEnd_toStartOf="@id/rightUsersLine"/>
 
         <View
-            android:id="@+id/rightGoalLine"
+            android:id="@+id/rightUsersLine"
             android:layout_width="0dp"
             android:layout_height="2dp"
             app:layout_constraintWidth_percent="0.4"
