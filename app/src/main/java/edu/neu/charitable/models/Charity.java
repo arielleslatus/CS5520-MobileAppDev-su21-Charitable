@@ -1,7 +1,5 @@
 package edu.neu.charitable.models;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 public class Charity {
     public int activeProjects;
     public String addressLine1;
@@ -79,4 +77,6 @@ public class Charity {
         return (c.id == this.id && c.name.equals(this.name));
 
     }
+
+
 }
