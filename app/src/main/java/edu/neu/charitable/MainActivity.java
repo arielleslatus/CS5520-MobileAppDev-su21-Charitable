@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -31,6 +32,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,6 +74,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // !!! all charities in free version of database cause unexpected behavior in browser view
                     // and possibly app behavior (latter unverified)
         //addCharities();
+
+        //this code is to check if app is opened from deep link
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                            Intent intent = new Intent(getApplicationContext(), RegisterForPool.class);
+                            String newUser = deepLink.getQueryParameter("newUser");
+                            intent.putExtra("LINK_INFO", newUser);
+                            startActivity(intent);
+                        }
+
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "failed to get link", Toast.LENGTH_LONG).show();
+                    }
+                });
 
         register = (TextView) findViewById(R.id.register);
         register.setOnClickListener(this);
