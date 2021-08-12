@@ -19,6 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import edu.neu.charitable.models.User;
+
 public class ProfileActivity extends AppCompatActivity {
 
     private FirebaseUser user;
@@ -93,5 +95,10 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+    public void navigateToSecurityPreferences(View view) {
+        startActivity(new Intent(this, SecurityPreferences.class));
+
+    }
+
 
 }
