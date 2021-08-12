@@ -150,7 +150,6 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
                         public void onComplete(@NonNull Task<Void> task) {
 
                             if (task.isSuccessful()) {
-
                                 //adding username to searchable table (verify unique/find friends)
                                 FirebaseDatabase.getInstance()
                                         .getReference("username_id")
@@ -162,6 +161,7 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
+                                        mAuth.getCurrentUser().sendEmailVerification();
                                         Toast.makeText(RegisterUser.this,
                                                 "username updated",
                                                 Toast.LENGTH_SHORT).show();

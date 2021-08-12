@@ -104,7 +104,8 @@
             android:text="Check"
             android:textColor="#ffffff"
             android:textSize="10sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:background="@drawable/round"/>
 
     </LinearLayout>
 
@@ -150,7 +151,8 @@
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_match" />
+        app:layout_constraintTop_toBottomOf="@+id/password_match"
+        android:background="@drawable/round"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

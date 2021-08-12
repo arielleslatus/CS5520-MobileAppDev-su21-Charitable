@@ -43,6 +43,7 @@ import java.util.Map;
 
 import edu.neu.charitable.models.Charity;
 import edu.neu.charitable.models.CharityString;
+import edu.neu.charitable.models.User;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -183,7 +184,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()) {
-                        startActivity(new Intent(MainActivity.this, Home.class));
+                        //Check if this user is normal or part of donation pool
+                        FirebaseDatabase.getInstance().getReference("user_pool").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    Boolean u = snapshot.getValue(Boolean.class);
+                                    if (u != null) {
+                                        startActivity(new Intent(MainActivity.this, DirectDonationHome.class));
+                                    } else {
+                                        startActivity(new Intent(MainActivity.this, Home.class));
+                                    }
+                                } else {
+                                    startActivity(new Intent(MainActivity.this, Home.class));
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                startActivity(new Intent(MainActivity.this, Home.class));
+                            }
+                        });
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Please check your email to " +
