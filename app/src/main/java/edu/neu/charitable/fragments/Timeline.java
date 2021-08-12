@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -65,6 +68,9 @@ public class Timeline extends Fragment {
     private RecyclerView rvPosts;
     private FirebaseDatabase mDb;
     private FeedRecyclerViewAdapter adapter;
+
+    private FloatingActionButton profileButton;
+    private ConstraintLayout goalCard;
 
     private Goal goal;
 
@@ -126,6 +132,9 @@ public class Timeline extends Fragment {
         adapter = new FeedRecyclerViewAdapter(posts);
         rvPosts.setAdapter(adapter);
 
+        profileButton = getActivity().findViewById(R.id.profile_button);
+        goalCard = view.findViewById(R.id.goalFragment);
+
         addListeners(view);
 
         load(view);
@@ -157,6 +166,8 @@ public class Timeline extends Fragment {
                         //Toast.makeText(getActivity(), "found friends", Toast.LENGTH_LONG).show();
                     }
                 }
+
+                friends.add(username);
 
                 for (String f : friends) {
                     mDb.getReference("user_posts").child(f).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -278,6 +289,32 @@ public class Timeline extends Fragment {
             }
         });
 
+        rvPosts.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && profileButton.isShown()) {
+                    profileButton.hide();
+                }
+
+                /*
+                if (dy > 0 && goalCard.isShown()) {
+                    goalCard.setVisibility(View.GONE);
+                }
+
+                if (dy < 0 && !goalCard.isShown()) {
+                    goalCard.setVisibility(View.VISIBLE);
+                }
+                 */
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    profileButton.show();
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
 
 
 

@@ -48,10 +48,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public List<Post> posts;
     private FirebaseDatabase mDB;
+    private String current_user;
 
     public FeedRecyclerViewAdapter(List<Post> posts) {
         this.posts = posts;
         mDB = FirebaseDatabase.getInstance();
+        current_user = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     @Override
@@ -198,7 +200,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     User u = snapshot.getValue(User.class);
-                    postText.setText("@" + u.username + " donated to " + post.charity + "!");
+                    if (post.user.equals(current_user)) {
+                        postText.setText("You donated to " + post.charity + "!");
+
+                    } else {
+                        postText.setText("@" + u.username + " donated to " + post.charity + "!");
+                    }
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
@@ -230,7 +237,13 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     User u = snapshot.getValue(User.class);
-                    postText.setText("@" + u.username + " acheived their goal for " + post.charity + "!");
+
+                    if (post.user.equals(current_user)) {
+                        postText.setText("You acheived your goal for " + post.charity + "!");
+
+                    } else {
+                        postText.setText("@" + u.username + " acheived their goal for " + post.charity + "!");
+                    }
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
@@ -264,7 +277,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     User u = snapshot.getValue(User.class);
-                    postText.setText("@" + u.username + " matched a dontation to " + post.charity + "!");
+                    if (post.user.equals(current_user)) {
+                        postText.setText("You matched a dontation to " + post.charity + "!");
+
+                    } else {
+                        postText.setText("@" + u.username + " matched a dontation to " + post.charity + "!");
+                    }
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");

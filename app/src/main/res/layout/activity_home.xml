@@ -33,10 +33,13 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="80dp"
         android:src="@drawable/ic_baseline_self_improvement_24"
+        android:backgroundTint="@color/green_vivid"
         app:fabCustomSize="40dp"
         android:contentDescription="@string/profile"
-        android:onClick="openProfile"/>
+        android:onClick="openProfile"
+        app:borderWidth="0dp"
+        android:elevation="6dp"/>
 
 </RelativeLayout>

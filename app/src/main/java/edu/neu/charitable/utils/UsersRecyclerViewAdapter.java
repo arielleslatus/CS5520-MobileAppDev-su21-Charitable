@@ -85,8 +85,8 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                                 mDB.getReference("user_friends").child(this_user).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        boolean friend_exists = false;
                                         if (snapshot.exists()) {
-                                            Boolean friend_exists = false;
                                             for (DataSnapshot ds : snapshot.getChildren()) {
                                                 if (ds.exists()) {
                                                     String found = ds.getValue(String.class);
@@ -95,18 +95,18 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                                                     }
                                                 }
                                             }
+                                        }
 
-                                            //add friend
-                                            if (!friend_exists) {
-                                                mDB.getReference("user_friends").child(this_user).push().setValue(other_user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        Toast.makeText( ((ItemViewHolder) holder).userCard.getContext(), "Friend Added", Toast.LENGTH_LONG).show();
-                                                    }
-                                                });
-                                            } else {
-                                                Toast.makeText( ((ItemViewHolder) holder).userCard.getContext(), "Friend already added", Toast.LENGTH_LONG).show();
-                                            }
+                                        //add friend
+                                        if (!friend_exists) {
+                                            mDB.getReference("user_friends").child(this_user).push().setValue(other_user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    Toast.makeText( ((ItemViewHolder) holder).userCard.getContext(), "Friend Added", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText( ((ItemViewHolder) holder).userCard.getContext(), "Friend already added", Toast.LENGTH_LONG).show();
                                         }
                                     }
 
