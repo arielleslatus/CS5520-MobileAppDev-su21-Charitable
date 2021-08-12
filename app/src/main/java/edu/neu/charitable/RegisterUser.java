@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -171,8 +173,16 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
                                 Toast.makeText(RegisterUser.this, "User has been " +
                                         "registered successfully!", Toast.LENGTH_LONG).show();
                                 progressBar.setVisibility(View.VISIBLE);
+                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                }, 2000);
 
-                                progressBar.setVisibility(View.GONE);
+
+
+
                             } else {
                                 Toast.makeText(RegisterUser.this, "Failed to register!" +
                                         "Try again!", Toast.LENGTH_LONG).show();
