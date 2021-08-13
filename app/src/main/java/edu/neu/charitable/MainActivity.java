@@ -45,7 +45,7 @@ import edu.neu.charitable.models.Charity;
 import edu.neu.charitable.models.CharityString;
 import edu.neu.charitable.models.User;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView register, forgotPassword;
     private EditText editTextEmail, editTextPassword;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // this is my hacky solution to populate free version of Firebase with included csv
         // to be removed after all charities are populated
         // !!! all charities in free version of database cause unexpected behavior in browser view
-                    // and possibly app behavior (latter unverified)
+        // and possibly app behavior (latter unverified)
         //addCharities();
 
         //this code is to check if app is opened from deep link
@@ -86,10 +86,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Uri deepLink = null;
                         if (pendingDynamicLinkData != null) {
                             deepLink = pendingDynamicLinkData.getLink();
-                            Intent intent = new Intent(getApplicationContext(), RegisterForPool.class);
+
                             String newUser = deepLink.getQueryParameter("newUser");
-                            intent.putExtra("LINK_INFO", newUser);
-                            startActivity(intent);
+                            if (newUser != null) {
+                                Intent intent = new Intent(getApplicationContext(), RegisterForPool.class);
+                                intent.putExtra("LINK_INFO", newUser);
+                                startActivity(intent);
+                            }
                         }
 
                     }
@@ -124,11 +127,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.register:
-                startActivity(new Intent(this,RegisterUser.class));
+                startActivity(new Intent(this, RegisterUser.class));
                 break;
-                
+
             case R.id.signIn:
                 userLogin();
                 break;
@@ -151,25 +154,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-        if(email.isEmpty()) {
+        if (email.isEmpty()) {
             editTextEmail.setError("Please type your email!");
             editTextEmail.requestFocus();
             return;
         }
 
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             editTextEmail.setError("Please enter a valid email!");
             editTextEmail.requestFocus();
             return;
         }
 
-        if(password.isEmpty()) {
+        if (password.isEmpty()) {
             editTextPassword.setError("Please type your password!");
             editTextPassword.requestFocus();
             return;
         }
 
-        if(password.length() < 6) {
+        if (password.length() < 6) {
             editTextPassword.setError("Min password length is 6 characters! Please try again!");
             editTextPassword.requestFocus();
             return;
@@ -181,9 +184,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
-                if(task.isSuccessful()) {
+                if (task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if(user.isEmailVerified()) {
+                    if (user.isEmailVerified()) {
                         //Check if this user is normal or part of donation pool
                         FirebaseDatabase.getInstance().getReference("user_pool").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -205,14 +208,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 startActivity(new Intent(MainActivity.this, Home.class));
                             }
                         });
-                    }else{
+                    } else {
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Please check your email to " +
                                 "verify your account!", Toast.LENGTH_LONG).show();
                         progressBar.setVisibility(View.GONE);
                     }
 
-                }else{
+                } else {
                     Toast.makeText(MainActivity.this, "Failed to login, please check your" +
                             "credentials", Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.GONE);
