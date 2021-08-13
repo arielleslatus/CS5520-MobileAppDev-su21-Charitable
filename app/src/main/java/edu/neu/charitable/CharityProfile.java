@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,8 +30,6 @@ public class CharityProfile  extends AppCompatActivity {
     String charityID;
     int logoId;
 
-    private FirebaseAuth mAuth;
-    private DatabaseReference charitiesReference;
     private DatabaseReference reference;
 
     String TAG = "CharityProfile";
@@ -43,22 +40,15 @@ public class CharityProfile  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.charity_profile);
 
-        this.mAuth = FirebaseAuth.getInstance();
-
         uidLoggedIn = getIntent().getExtras().getString("uid");
         charityID = getIntent().getExtras().getString("charityID");
 
         // Get the path from firebase.
-        this.charitiesReference = FirebaseDatabase.getInstance().getReference("CharitiesInfo");
-        this.reference = FirebaseDatabase.getInstance().getReference("CharitiesInfo");
-
-
+        this.reference = FirebaseDatabase.getInstance().getReference("Charities");
 
         // Get info about charity then populate the layout
         retrieveCharityData();
         updateFields();
-
-
 
     }
 

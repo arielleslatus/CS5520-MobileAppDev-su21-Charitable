@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent debugIntent = new Intent(this, CharityProfile.class);
                 Bundle extras = new Bundle();
                 extras.putString("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
-                extras.putString("charityID", "MgUvYOML_VlQyKyA3zm");
+                extras.putString("charityID", "MgWVicf0bKkl4Frwt59");
                 debugIntent.putExtras(extras);
                 startActivity(debugIntent);
 
