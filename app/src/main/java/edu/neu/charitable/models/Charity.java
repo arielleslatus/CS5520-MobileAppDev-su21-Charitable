@@ -103,4 +103,8 @@ public class Charity {
     public String getState() {
         return state;
     }
+
+
+
+
 }

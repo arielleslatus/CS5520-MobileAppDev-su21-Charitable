@@ -61,8 +61,8 @@ public class CharityProfile extends AppCompatActivity {
         // and what charity are they viewing?
         uidLoggedIn = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // TODO remove after debugging
-        uidLoggedIn = "AoIjpYofuxVFzgL1JpcwOx7P7hv2";
+//        // TODO remove after debugging
+//        uidLoggedIn = "0wblLOmpYhcVKZJvcpRS1VjwlKy2";
 
         charityID = getIntent().getExtras().getString("charityID");
 
