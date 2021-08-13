@@ -33,7 +33,7 @@ import edu.neu.charitable.models.User;
 public class RegisterForPool extends AppCompatActivity implements View.OnClickListener {
 
     private TextView banner, registerUser;
-    private EditText editTextFullName, editTextCity, editTextEmail, editTextPassword, editTextRepeat, editTextUsername;
+    private EditText editTextFullName, editTextCity, editTextEmail, editTextPassword, editTextRepeat, editTextUsername, venmoId;
     private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
@@ -63,6 +63,7 @@ public class RegisterForPool extends AppCompatActivity implements View.OnClickLi
         editTextRepeat = (EditText) findViewById(R.id.rfp_password_match);
         editTextUsername = (EditText) findViewById(R.id.rfp_username);
         usernameVerified = false;
+        venmoId = (EditText) findViewById(R.id.venmoID);
 
 
         progressBar = (ProgressBar) findViewById(R.id.rfp_progressBar);
@@ -127,6 +128,7 @@ public class RegisterForPool extends AppCompatActivity implements View.OnClickLi
         String city = editTextCity.getText().toString().trim();
         String password_match = editTextRepeat.getText().toString().trim();
         String username = editTextUsername.getText().toString().trim();
+        String venmo = venmoId.getText().toString().trim();
 
         if (fullName.isEmpty()) {
             editTextFullName.setError("Full name is required!");
@@ -176,6 +178,12 @@ public class RegisterForPool extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
+        if (venmo.isEmpty()) {
+            venmoId.setError("Need a venmo id");
+            venmoId.requestFocus();
+            return;
+        }
+
         if (!usernameVerified) {
             editTextUsername.requestFocus();
             return;
@@ -211,8 +219,8 @@ public class RegisterForPool extends AppCompatActivity implements View.OnClickLi
                                                     .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
-
                                                     if (task.isSuccessful()) {
+
                                                         //adding username to searchable table (verify unique/find friends)
                                                         mDb.getReference("username_id")
                                                                 .child(username)
@@ -236,7 +244,7 @@ public class RegisterForPool extends AppCompatActivity implements View.OnClickLi
                                                                                     Integer num_users;
                                                                                     num_users = snapshot.getValue(Integer.class);
                                                                                     if (num_users != null) {
-                                                                                        mDb.getReference("pool").setValue(num_users + 1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                        mDb.getReference("pool").child(Integer.toString(num_users + 1)).setValue(mAuth.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                             @Override
                                                                                             public void onSuccess(@NonNull Void unused) {
                                                                                                 mDb.getReference("num_pool_users").child(Integer.toString(num_users + 1)).setValue(user);
@@ -263,6 +271,9 @@ public class RegisterForPool extends AppCompatActivity implements View.OnClickLi
                                                                                 progressBar.setVisibility(View.GONE);
                                                                             }
                                                                         });
+
+                                                                        //add venmo id
+                                                                        mDb.getReference("username_venmo").child(mAuth.getCurrentUser().getUid()).setValue(venmo);
 
                                                                     }});
                                                     } else {

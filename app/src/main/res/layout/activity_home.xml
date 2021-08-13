@@ -10,36 +10,93 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation"
-        />
+        android:layout_above="@id/bottom_navigation" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
-        app:itemIconSize="@dimen/_26"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:background="@android:color/white"
+        app:itemIconSize="@dimen/_26"
         app:itemIconTint="@color/green_dark"
         app:itemTextColor="@android:color/white"
-        app:menu="@menu/bottom_menu"/>
-
+        app:menu="@menu/bottom_menu" />
+    <!--
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_height="40dp"
-        android:layout_width="40dp"
         android:id="@+id/profile_button"
-        android:layout_alignParentBottom="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="80dp"
-        android:src="@drawable/ic_baseline_self_improvement_24"
         android:backgroundTint="@color/green_vivid"
-        app:fabCustomSize="40dp"
         android:contentDescription="@string/profile"
+        android:elevation="6dp"
         android:onClick="openProfile"
+        android:src="@drawable/ic_baseline_self_improvement_24"
         app:borderWidth="0dp"
-        android:elevation="6dp"/>
+        app:fabCustomSize="40dp" />
+        -->
+
+    <com.nambimobile.widgets.efab.ExpandableFabLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.nambimobile.widgets.efab.Overlay
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:overlay_alpha="0.75"
+            app:overlay_color="#000000"
+            app:overlay_openingAnimationDurationMs="1000" />
+
+        <com.nambimobile.widgets.efab.ExpandableFab
+            android:id="@+id/profile_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="80dp"
+            app:efab_closingAnticipateTension="0"
+            app:efab_color="@color/green_vivid"
+            app:efab_icon="@drawable/ic_baseline_all_inclusive_24"
+            app:efab_iconAnimationRotationDeg="-360"
+            />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_color="@color/green_dark"
+            app:fab_icon="@drawable/ic_baseline_self_improvement_24"
+            app:label_backgroundColor="@color/gray"
+            app:label_text="Profile"
+            app:label_textColor="@color/black"
+            android:onClick="openProfile"/>
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_color="@color/green_dark"
+            app:fab_icon="@drawable/ic_baseline_attach_money_24"
+            app:label_backgroundColor="@color/gray"
+            app:label_textColor="@color/black"
+            app:label_text="Donate"
+            android:onClick="openDonation"/>
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_color="@color/green_dark"
+            app:fab_icon="@drawable/ic_baseline_pool_24"
+            app:label_backgroundColor="@color/gray"
+            app:label_textColor="@color/black"
+            app:label_text="Donate to a Random User in Curated Pool!"
+            android:onClick="openPool"/>
+
+    </com.nambimobile.widgets.efab.ExpandableFabLayout>
+
 
 </RelativeLayout>
