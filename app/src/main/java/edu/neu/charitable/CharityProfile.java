@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -22,7 +23,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
-import edu.neu.charitable.utils.charityProfile.CharityProfileRecyclerViewAdapter;
+import edu.neu.charitable.utils.CharityProfileRecyclerViewAdapter;
+
 
 public class CharityProfile  extends AppCompatActivity {
 
@@ -64,6 +66,8 @@ public class CharityProfile  extends AppCompatActivity {
         // Initialize the content of the feed
         CharityProfileRecyclerViewAdapter charityAdapter = new
                 CharityProfileRecyclerViewAdapter(this, s1, s2);
+        recyclerView.setAdapter(charityAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
