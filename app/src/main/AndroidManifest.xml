@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Charitable">
         <activity android:name=".DirectDonationHome"></activity>
-        <activity android:name=".RegisterForPool">
+        <activity android:name=".RegisterForPool"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

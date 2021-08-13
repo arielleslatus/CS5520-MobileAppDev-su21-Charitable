@@ -87,7 +87,7 @@
             android:layout_width="215dp"
             android:layout_height="48dp"
             android:ems="10"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:textSize="14sp"
             android:hint="Unique Username"
             app:layout_constraintRight_toRightOf="parent"
@@ -136,6 +136,20 @@
         android:layout_marginTop="20dp"
         />
 
+    <EditText
+        android:id="@+id/venmoID"
+        android:layout_width="315dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:inputType="text"
+        android:textSize="14sp"
+        android:hint="Enter your venmo id"
+        app:layout_constraintTop_toBottomOf="@+id/rfp_password_match"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="20dp"
+        />
+
 
 
     <Button
@@ -150,7 +164,7 @@
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rfp_password_match"
+        app:layout_constraintTop_toBottomOf="@+id/venmoID"
         android:background="@drawable/round"/>
 
     <ProgressBar
