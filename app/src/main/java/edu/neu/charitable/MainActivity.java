@@ -1,12 +1,10 @@
 package edu.neu.charitable;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -16,15 +14,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -143,8 +142,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.debugButton:
                 Log.d(TAG, "Clicked debug button");
                 Intent debugIntent = new Intent(this, CharityProfile.class);
-                debugIntent.putExtra("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
+                Bundle extras = new Bundle();
+                extras.putString("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
+                extras.putString("charityID", "MgWVicf0bKkl4Frwt59");
+                debugIntent.putExtras(extras);
                 startActivity(debugIntent);
+
                 break;
         }
 
@@ -179,6 +182,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         progressBar.setVisibility(View.VISIBLE);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setVisibility(View.GONE);
+            }
+        }, 2000);
+
 
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
