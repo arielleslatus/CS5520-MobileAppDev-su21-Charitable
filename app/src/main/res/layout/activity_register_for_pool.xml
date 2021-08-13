@@ -2,17 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/profileImage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterUser">
+    tools:context=".RegisterForPool">
 
     <TextView
-        android:id="@+id/banner"
+        android:id="@+id/rfp_banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CHARITABLE"
-        android:textSize="40sp"
+        android:text="CHARITABLE DIRECT"
+        android:textSize="30sp"
         android:textAlignment="center"
         android:textStyle="bold"
         android:fontFamily="sans-serif-black"
@@ -23,19 +22,19 @@
         />
 
     <TextView
-        android:id="@+id/bannerDescrption"
+        android:id="@+id/rfp_bannerDescrption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Do good, feel good."
+        android:text="Register to be a recipient in direct donations pool"
         android:textAlignment="center"
         android:textSize="14sp"
         android:textStyle="italic"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/banner" />
+        app:layout_constraintTop_toBottomOf="@+id/rfp_banner" />
 
     <EditText
-        android:id="@+id/fullName"
+        android:id="@+id/rfp_fullName"
         android:layout_width="315dp"
         android:layout_height="48dp"
         android:layout_marginTop="60dp"
@@ -45,10 +44,10 @@
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bannerDescrption" />
+        app:layout_constraintTop_toBottomOf="@+id/rfp_bannerDescrption" />
 
     <EditText
-        android:id="@+id/city"
+        android:id="@+id/rfp_city"
         android:layout_width="315dp"
         android:layout_height="48dp"
         android:layout_marginTop="20dp"
@@ -58,10 +57,10 @@
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fullName" />
+        app:layout_constraintTop_toBottomOf="@+id/rfp_fullName" />
 
     <EditText
-        android:id="@+id/email"
+        android:id="@+id/rfp_email"
         android:layout_width="315dp"
         android:layout_height="48dp"
         android:layout_marginTop="20dp"
@@ -71,24 +70,24 @@
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/city" />
+        app:layout_constraintTop_toBottomOf="@+id/rfp_city" />
 
     <LinearLayout
-        android:id="@+id/username_wrapper"
+        android:id="@+id/rfp_username_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/email"
+        app:layout_constraintTop_toBottomOf="@+id/rfp_email"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="20dp"
         >
 
         <EditText
-            android:id="@+id/username"
+            android:id="@+id/rfp_username"
             android:layout_width="215dp"
             android:layout_height="48dp"
             android:ems="10"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:textSize="14sp"
             android:hint="Unique Username"
             app:layout_constraintRight_toRightOf="parent"
@@ -96,10 +95,10 @@
             />
 
         <Button
-            android:id="@+id/verfy_username"
+            android:id="@+id/rfp_verfy_username"
             android:layout_width="100dp"
             android:layout_height="48dp"
-            android:onClick="verifyUsername"
+            android:onClick="rfp_verifyUsername"
             android:backgroundTint="#0ED6B9"
             android:text="Check"
             android:textColor="#ffffff"
@@ -110,28 +109,42 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/rfp_password"
         android:layout_width="315dp"
         android:layout_height="48dp"
         android:ems="10"
         android:inputType="textPassword"
         android:textSize="14sp"
         android:hint="Password"
-        app:layout_constraintTop_toBottomOf="@+id/username_wrapper"
+        app:layout_constraintTop_toBottomOf="@+id/rfp_username_wrapper"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="20dp"
         />
 
     <EditText
-        android:id="@+id/password_match"
+        android:id="@+id/rfp_password_match"
         android:layout_width="315dp"
         android:layout_height="48dp"
         android:ems="10"
         android:inputType="textPassword"
         android:textSize="14sp"
         android:hint="Repeat Password"
-        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintTop_toBottomOf="@+id/rfp_password"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="20dp"
+        />
+
+    <EditText
+        android:id="@+id/venmoID"
+        android:layout_width="315dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:inputType="text"
+        android:textSize="14sp"
+        android:hint="Enter your venmo id"
+        app:layout_constraintTop_toBottomOf="@+id/rfp_password_match"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="20dp"
@@ -140,7 +153,7 @@
 
 
     <Button
-        android:id="@+id/registerUser"
+        android:id="@+id/rfp_registerUser"
         android:layout_width="209dp"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
@@ -151,11 +164,11 @@
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_match"
+        app:layout_constraintTop_toBottomOf="@+id/venmoID"
         android:background="@drawable/round"/>
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/rfp_progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -167,9 +180,5 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         />
-
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

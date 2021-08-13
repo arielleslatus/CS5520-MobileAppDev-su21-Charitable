@@ -1,6 +1,7 @@
 package edu.neu.charitable;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,7 +24,27 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import edu.neu.charitable.models.Charity;
+import edu.neu.charitable.models.CharityString;
+import edu.neu.charitable.models.User;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView register, forgotPassword;
     private EditText editTextEmail, editTextPassword;
@@ -51,8 +72,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // this is my hacky solution to populate free version of Firebase with included csv
         // to be removed after all charities are populated
         // !!! all charities in free version of database cause unexpected behavior in browser view
-                    // and possibly app behavior (latter unverified)
+        // and possibly app behavior (latter unverified)
         //addCharities();
+
+        //this code is to check if app is opened from deep link
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+
+                            String newUser = deepLink.getQueryParameter("newUser");
+                            if (newUser != null) {
+                                Intent intent = new Intent(getApplicationContext(), RegisterForPool.class);
+                                intent.putExtra("LINK_INFO", newUser);
+                                startActivity(intent);
+                            }
+                        }
+
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "failed to get link", Toast.LENGTH_LONG).show();
+                    }
+                });
 
         register = (TextView) findViewById(R.id.register);
         register.setOnClickListener(this);
@@ -77,11 +126,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.register:
-                startActivity(new Intent(this,RegisterUser.class));
+                startActivity(new Intent(this, RegisterUser.class));
                 break;
-                
+
             case R.id.signIn:
                 userLogin();
                 break;
@@ -108,25 +157,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-        if(email.isEmpty()) {
+        if (email.isEmpty()) {
             editTextEmail.setError("Please type your email!");
             editTextEmail.requestFocus();
             return;
         }
 
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             editTextEmail.setError("Please enter a valid email!");
             editTextEmail.requestFocus();
             return;
         }
 
-        if(password.isEmpty()) {
+        if (password.isEmpty()) {
             editTextPassword.setError("Please type your password!");
             editTextPassword.requestFocus();
             return;
         }
 
-        if(password.length() < 6) {
+        if (password.length() < 6) {
             editTextPassword.setError("Min password length is 6 characters! Please try again!");
             editTextPassword.requestFocus();
             return;
@@ -145,18 +194,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
-                if(task.isSuccessful()) {
+                if (task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if(user.isEmailVerified()) {
-                        startActivity(new Intent(MainActivity.this, Home.class));
-                    }else{
+                    if (user.isEmailVerified()) {
+                        //Check if this user is normal or part of donation pool
+                        FirebaseDatabase.getInstance().getReference("user_pool").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    Boolean u = snapshot.getValue(Boolean.class);
+                                    if (u != null) {
+                                        startActivity(new Intent(MainActivity.this, DirectDonationHome.class));
+                                    } else {
+                                        startActivity(new Intent(MainActivity.this, Home.class));
+                                    }
+                                } else {
+                                    startActivity(new Intent(MainActivity.this, Home.class));
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                startActivity(new Intent(MainActivity.this, Home.class));
+                            }
+                        });
+                    } else {
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Please check your email to " +
                                 "verify your account!", Toast.LENGTH_LONG).show();
                         progressBar.setVisibility(View.GONE);
                     }
 
-                }else{
+                } else {
                     Toast.makeText(MainActivity.this, "Failed to login, please check your" +
                             "credentials", Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.GONE);
