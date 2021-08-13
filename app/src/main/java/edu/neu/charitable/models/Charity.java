@@ -79,4 +79,28 @@ public class Charity {
     }
 
 
+    public int getActiveProjects() {
+        return activeProjects;
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getMission() {
+        return mission;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getState() {
+        return state;
+    }
 }
