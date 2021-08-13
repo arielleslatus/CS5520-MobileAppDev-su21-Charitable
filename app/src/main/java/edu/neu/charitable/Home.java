@@ -51,6 +51,8 @@ public class Home extends AppCompatActivity {
                     break;
                 case R.id.settings:
                     selectedFragment = new Settings();
+                    //startActivity(new Intent(Home.this, SecurityPreferences.class));
+
                     break;
             }
             // It will help to replace the
