@@ -48,7 +48,6 @@ public class CharityProfile  extends AppCompatActivity {
 
         // Get info about charity then populate the layout
         retrieveCharityData();
-        updateFields();
 
     }
 
@@ -97,6 +96,17 @@ public class CharityProfile  extends AppCompatActivity {
                     charityLocation = curCharity.get("city") + ", " + curCharity.get("state") + ", "
                             + curCharity.get("country");
                     charityMission = curCharity.get("mission");
+                    charityMission = charityMission.replace(".MISSION STATEMENT:",
+                            "");
+
+                    if (charityMission.length() > 275) {
+                        charityMission = charityMission.substring(0, 275) + "...";
+                    }
+
+
+                    logoId = R.drawable.aspca_logo;
+
+                    updateFields();
 
                 }
             }
@@ -108,10 +118,6 @@ public class CharityProfile  extends AppCompatActivity {
         });
 
 
-//        charityName = "ASPCA";
-//        charityLocation = "Boston, MA, USA";
-//        charityMission = "Saving the lives of puppies and kittens since 1975.";
-        logoId = R.drawable.aspca_logo;
 
     }
 
