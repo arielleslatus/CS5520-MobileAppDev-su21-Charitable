@@ -2,14 +2,6 @@ package edu.neu.charitable.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +9,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,10 +22,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 import edu.neu.charitable.DonateDummy;
@@ -38,7 +33,6 @@ import edu.neu.charitable.models.Charity;
 import edu.neu.charitable.models.Goal;
 import edu.neu.charitable.models.Post;
 import edu.neu.charitable.utils.FeedRecyclerViewAdapter;
-import okhttp3.internal.cache.DiskLruCache;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -213,7 +207,7 @@ public class Timeline extends Fragment {
                                     Charity ch = snapshot.getValue(Charity.class);
                                     goalText.setText("Donate $" + goal.amountSet + " to " + ch.name);
                                     goalPercent.setText(Integer.toString(Math.round( (goal.amoundDonated / goal.amountSet) * 100)) + "%");
-                                    Picasso.get().load(ch.logoUrl).into(charityImage);
+//                                    Picasso.get().load(ch.logoUrl).into(charityImage);
                                     goalProgress.setProgress( Math.round( (goal.amoundDonated / goal.amountSet) * 100));
                                 }
                             }
@@ -322,6 +316,6 @@ public class Timeline extends Fragment {
     }
 
 
+//    Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(imageView);
 
-    //Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(imageView);
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,6 +21,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+
+import edu.neu.charitable.utils.charityProfile.CharityProfileRecyclerViewAdapter;
 
 public class CharityProfile  extends AppCompatActivity {
 
@@ -33,6 +36,12 @@ public class CharityProfile  extends AppCompatActivity {
     private DatabaseReference reference;
 
     String TAG = "CharityProfile";
+
+    String s1[] = new String[] {"Charity1", "Charity2", "Charity3"};
+    String s2[] = new String[] {"Description1", "Description2", "Description3"};
+
+    RecyclerView recyclerView;
+
 
 
     @Override
@@ -48,6 +57,13 @@ public class CharityProfile  extends AppCompatActivity {
 
         // Get info about charity then populate the layout
         retrieveCharityData();
+
+        // Find the ID for our recyclerview
+        recyclerView = findViewById(R.id.charityProfileRecyclerView);
+
+        // Initialize the content of the feed
+        CharityProfileRecyclerViewAdapter charityAdapter = new
+                CharityProfileRecyclerViewAdapter(this, s1, s2);
 
     }
 

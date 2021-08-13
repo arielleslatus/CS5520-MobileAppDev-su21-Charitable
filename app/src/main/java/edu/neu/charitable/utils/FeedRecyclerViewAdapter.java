@@ -1,7 +1,6 @@
 package edu.neu.charitable.utils;
 
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,9 +21,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-import java.security.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +30,6 @@ import java.util.TimeZone;
 import edu.neu.charitable.DonateDummy;
 import edu.neu.charitable.Home;
 import edu.neu.charitable.R;
-import edu.neu.charitable.fragments.Timeline;
 import edu.neu.charitable.models.Post;
 import edu.neu.charitable.models.User;
 
@@ -47,12 +41,10 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     private final int VIEW_TYPE_GOAL_ACHIEVED = 3;
 
     public List<Post> posts;
-    private FirebaseDatabase mDB;
     private String current_user;
 
     public FeedRecyclerViewAdapter(List<Post> posts) {
         this.posts = posts;
-        mDB = FirebaseDatabase.getInstance();
         current_user = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
@@ -63,7 +55,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             return new FeedRecyclerViewAdapter.LoadingViewHolder(view);
         } else if (viewType == VIEW_TYPE_DONATION) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_donation, parent, false);
-            return new FeedRecyclerViewAdapter.DonationViewHolder(view);
+            return new DonationViewHolder(view);
         } else if (viewType == VIEW_TYPE_MATCH) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_match, parent, false);
             return new FeedRecyclerViewAdapter.MatchViewHolder(view);
@@ -75,7 +67,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof FeedRecyclerViewAdapter.DonationViewHolder) {
+        if (holder instanceof DonationViewHolder) {
 
             bindDonationView(holder, position);
 
@@ -113,26 +105,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    private class DonationViewHolder extends RecyclerView.ViewHolder {
-
-        public Button buttonMatch;
-        public Button buttonShare;
-        public Button buttonApplaud;
-        public TextView postText;
-        public TextView timeText;
-        public CardView donationPostCard;
-
-        public DonationViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            postText = (TextView) itemView.findViewById(R.id.donation_text);
-            timeText = (TextView) itemView.findViewById(R.id.donation_time_applauds);
-            buttonMatch = (Button) itemView.findViewById(R.id.donation_match);
-            buttonShare= (Button) itemView.findViewById(R.id.donation_share);
-            buttonApplaud = (Button) itemView.findViewById(R.id.donation_applaud);
-            donationPostCard = (CardView) itemView.findViewById(R.id.donation_card);
-        }
-    }
 
     private class MatchViewHolder extends RecyclerView.ViewHolder {
 

@@ -1,6 +1,5 @@
 package edu.neu.charitable.utils;
 
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,7 @@ import edu.neu.charitable.R;
 import edu.neu.charitable.models.User;
 
 
-public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SearchUsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
@@ -35,7 +34,7 @@ public class UsersRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     public List<User> users;
     private FirebaseDatabase mDB;
 
-    public UsersRecyclerViewAdapter(List<User> users) {
+    public SearchUsersRecyclerViewAdapter(List<User> users) {
         this.users = users;
         mDB = FirebaseDatabase.getInstance();
     }
