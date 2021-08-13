@@ -1,9 +1,5 @@
 package edu.neu.charitable;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,31 +13,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import edu.neu.charitable.models.Charity;
-import edu.neu.charitable.models.CharityString;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -113,8 +93,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.debugButton:
                 Log.d(TAG, "Clicked debug button");
                 Intent debugIntent = new Intent(this, CharityProfile.class);
-                debugIntent.putExtra("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
+                Bundle extras = new Bundle();
+                extras.putString("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
+                extras.putString("charityID", "MgWVicf0bKkl4Frwt59");
+                debugIntent.putExtras(extras);
                 startActivity(debugIntent);
+
                 break;
         }
 
