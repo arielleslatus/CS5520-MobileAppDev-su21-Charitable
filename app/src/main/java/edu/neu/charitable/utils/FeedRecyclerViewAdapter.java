@@ -488,7 +488,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                     };
 
                     // Get location of where the charity name is, within the post text content. Make that clickable.
-
                     ss.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                     // Set that as the text content.
@@ -520,6 +519,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         });
     }
 
+
     private void bindMatchView(@NonNull RecyclerView.ViewHolder holder, int position) {
         Post post = posts.get(position);
 
@@ -536,6 +536,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                 if (snapshot.exists()) {
                     User u = snapshot.getValue(User.class);
 
+                    Log.d(TAG, "U: " + u.toString());
+
                     mDB.getReference("Users").child(post.matchedUser).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -544,22 +546,84 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 User m = snapshot.getValue(User.class);
                                 String mId = snapshot.getKey();
 
-                                if (post.user.equals(current_user)) {
+                                Log.d(TAG, "m: " + m.toString());
+                                Log.d(TAG, "mId: " + mId.toString());
+                                Log.d(TAG, "m.username: " + m.username);
+                                Log.d(TAG, "current_user: " + current_user.toString());
 
-                                    if (m.username.equals(u.username)) {
-                                        postText.setText("You matched your own donation to " + post.charity + "!");
-                                    } else {
-                                        postText.setText("You matched @" + m.username + "'s donation to " + post.charity + "!");
-                                    }
 
-                                } else {
+                                String textContent = "";
+                                int startSpan = 0;
+                                int endSpan = 0;
 
-                                    if (mId.equals(current_user)) {
-                                        postText.setText("@" + u.username + " matched your donation to " + post.charity + "!");
-                                    } else {
-                                        postText.setText("@" + u.username + " matched @" + m.username + "'s donation to " + post.charity + "!");
-                                    }
+                                if (post.user.equals(current_user) && m.username.equals(u.username) ) {
+                                    textContent = "You matched your own donation to " + post.charity + "!";
+                                    startSpan = 33;
+                                    endSpan = startSpan + post.charity.length();
                                 }
+
+                                else if (post.user.equals(current_user) && !m.username.equals(u.username) ) {
+                                    textContent = "You matched @" + m.username + "'s donation to " + post.charity + "!";
+                                    startSpan = 28 + m.username.length();
+                                    endSpan = startSpan + post.charity.length();
+                                }
+
+                                else if (!post.user.equals(current_user) && mId.equals(current_user)) {
+                                    textContent = "@" + u.username + " matched your donation to " + post.charity + "!";
+                                    startSpan = 27 + m.username.length();
+                                    endSpan = startSpan + post.charity.length();
+                                }
+
+                                else {
+                                    textContent = "@" + u.username + " matched @" + m.username + "'s donation to " + post.charity + "!";
+                                    startSpan = 26 + u.username.length() + m.username.length();
+                                    endSpan = startSpan + post.charity.length();
+
+                                }
+
+
+                                // Create a clickable string where only the charity name will be clickable.
+                                SpannableString ss = new SpannableString(textContent);
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View textView) {
+
+                                        // On click of the charity name, start a new activity,
+                                        // the charity profile of the charity that was clicked on
+                                        Intent loadCharityIntent = new Intent(textView.getContext(), CharityProfile.class);
+                                        Bundle extras = new Bundle();
+
+                                        // Placeholder
+                                        charityIDtoLaunch = "Error Finding Charity";
+
+                                        // Need to make an asynchronous call/not launch the activity
+                                        // until we get the ID of the charity to launch it
+                                        getCharityID(new MyCallback() {
+                                            @Override
+                                            public void onCallback(String value) {
+                                                charityIDtoLaunch = value;
+
+                                                // Load the string into the intent and start the activity!
+                                                extras.putString("charityID", charityIDtoLaunch);
+                                                loadCharityIntent.putExtras(extras);
+                                                textView.getContext().startActivity(loadCharityIntent);
+                                            }
+                                        }, post.charity);
+
+                                    }
+                                    @Override
+                                    public void updateDrawState(TextPaint ds) {
+                                        super.updateDrawState(ds);
+                                        ds.setUnderlineText(false);
+                                    }
+                                };
+
+                                // Get location of where the charity name is, within the post text content. Make that clickable.
+                                ss.setSpan(clickableSpan, startSpan, endSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                                // Set that as the text content.
+                                postText.setText(ss);
+                                postText.setMovementMethod(LinkMovementMethod.getInstance());
 
                                 LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
