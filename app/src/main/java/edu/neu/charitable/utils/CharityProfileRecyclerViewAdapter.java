@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -184,48 +183,42 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
         CardView donationPostCard = ((DonationViewHolder) holder).donationPostCard;
 
 
-        // Get currently logged in user from db, and fill in information in the post's Views.
-        FirebaseDatabase.getInstance().getReference("Users").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                Log.d(TAG, "onDataChange in getReference(\"Users\")");
-
-                if (snapshot.exists()) {
-                    Log.d(TAG, "Users Snapshot does exist");
-
-                    // Figure out if we should use 1st or 3rd person based on logged in user.
-                    String userText = "You";
-                    User u = snapshot.getValue(User.class);
-                    if (!post.user.equals(current_user)) {
-                        Log.d(TAG, "Use 3rd person.");
-                        String postUsername = post.user;
-                        userText = "@" + postUsername;
+        if (!post.user.equals(current_user)) {
+            FirebaseDatabase.getInstance().getReference("Users").child(post.user)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        User retrievedUser = snapshot.getValue(User.class);
+                        String postUsername = retrievedUser.username;
+                        String userText = "@" + postUsername;
+                        String postTextContent = userText + " donated to " + post.charity + "!";
+                        postTextView.setText(postTextContent);
                     }
-
-                    Log.d(TAG, "... userText:" + userText);
-                    String postTextContent = userText + " donated to " + post.charity + "!";
-                    Log.d(TAG, "... postTextContent:" + postTextContent);
-
-                    postTextView.setText(postTextContent);
-
-                    LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
-                    timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
-
-                    applaudListener(holder, buttonApplaud, post);
-                    matchOnClickListener(holder, buttonMatch, post);
                 }
 
-                else {
-                    Log.d(TAG, "Users Snapshot does not exist");
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), error.toString(), Toast.LENGTH_LONG).show();
-            }
-        });
+            });
+        }
+
+        else {
+            String userText = "You";
+            String postTextContent = userText + " donated to " + post.charity + "!";
+            postTextView.setText(postTextContent);
+        }
+
+
+        LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+        timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+        applaudListener(holder, buttonApplaud, post);
+        matchOnClickListener(holder, buttonMatch, post);
+
+
     }
 
 

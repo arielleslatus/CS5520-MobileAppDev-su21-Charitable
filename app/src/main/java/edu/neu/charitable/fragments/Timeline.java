@@ -205,7 +205,8 @@ public class Timeline extends Fragment {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
                                     Charity ch = snapshot.getValue(Charity.class);
-                                    goalText.setText("Donate $" + goal.amountSet + " to " + ch.name);
+                                    int goalAmountRounded = (Math.round(goal.amountSet));
+                                    goalText.setText("Donate $" + goalAmountRounded + " to " + ch.name);
                                     goalPercent.setText(Integer.toString(Math.round( (goal.amoundDonated / goal.amountSet) * 100)) + "%");
 //                                    Picasso.get().load(ch.logoUrl).into(charityImage);
                                     goalProgress.setProgress( Math.round( (goal.amoundDonated / goal.amountSet) * 100));
