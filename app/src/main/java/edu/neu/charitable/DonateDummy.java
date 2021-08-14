@@ -394,7 +394,6 @@ public class DonateDummy extends AppCompatActivity implements SensorEventListene
 
 
     public void handleShakeEvent() {
-        startActivity(new Intent(this, Home.class));
         this.mDB.getReference("Charities").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -544,7 +543,8 @@ public class DonateDummy extends AppCompatActivity implements SensorEventListene
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Integer num_in_pool = snapshot.getValue(Integer.class);
+                    String num = snapshot.getValue(String.class);
+                    Integer num_in_pool = Integer.parseInt(num);
                     if (num_in_pool != null) {
                         int random = ThreadLocalRandom.current().nextInt(1, num_in_pool + 1);
 
