@@ -102,7 +102,7 @@ public class CharityProfile extends AppCompatActivity {
 
     private void retrieveCharityData(){
 
-        this.referenceCharitiesDB.addListenerForSingleValueEvent(new ValueEventListener() {
+        this.referenceCharitiesDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "Retrieving Charity Data to Populate CharityProfile for: " + charityID);
@@ -176,6 +176,8 @@ public class CharityProfile extends AppCompatActivity {
                 Object donationsDataSnapshot = dataSnapshot.getValue(Object.class);
                 if (donationsDataSnapshot != null) {
 
+                    Log.d(TAG, "donationsDataSnapshot isn't null! Finding donations.... ");
+
                     HashMap<String,Object> donationsDataSnapshotHashMap = (HashMap<String,Object>) donationsDataSnapshot;
 
                     // For each user in the user_donation database,
@@ -193,14 +195,13 @@ public class CharityProfile extends AppCompatActivity {
 
                             if (donation.get("charity").equals(charityName) ) {
 
-                                Log.d(TAG, "Donation found for  " + charityName);
+                                Log.d(TAG, "Donation found for  " + charityName + " with donationID: " + donationID);
 
                                 // Need to find the user of the username who donated
                                 referenceUsersDB.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshotUsers) {
                                         Object userDataSnapshot = dataSnapshotUsers.getValue(Object.class);
-
 
                                         if (userDataSnapshot != null) {
 
