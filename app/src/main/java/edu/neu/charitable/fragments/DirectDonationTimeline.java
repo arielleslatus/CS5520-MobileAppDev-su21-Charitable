@@ -18,9 +18,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import edu.neu.charitable.R;
 import edu.neu.charitable.models.Donation;
+import edu.neu.charitable.models.Post;
 import edu.neu.charitable.utils.DirectDonationRecyclerViewAdapter;
 
 /**
@@ -105,6 +107,12 @@ public class DirectDonationTimeline extends Fragment {
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         donations.add(ds.getValue(Donation.class));
                     }
+                    donations.sort(new Comparator<Donation>() {
+                        @Override
+                        public int compare(Donation o1, Donation o2) {
+                            return Long.compare(o2.timestamp, o1.timestamp);
+                        }
+                    });
                     adapter.notifyDataSetChanged();
                 }
             }

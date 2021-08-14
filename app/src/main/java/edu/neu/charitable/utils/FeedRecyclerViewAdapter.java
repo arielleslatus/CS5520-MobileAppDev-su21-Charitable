@@ -682,9 +682,9 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 } else {
 
                                     if (toId.equals(current_user)) {
-                                        postText.setText("@" + u.username +  "matched your gift to our pool!");
+                                        postText.setText("@" + u.username +  " matched your gift to our pool!");
                                     } else {
-                                        postText.setText("@" + u.username +  "matched @" + to.username + "'s gift to our pool!");
+                                        postText.setText("@" + u.username +  " matched @" + to.username + "'s gift to our pool!");
                                     }
                                 }
 

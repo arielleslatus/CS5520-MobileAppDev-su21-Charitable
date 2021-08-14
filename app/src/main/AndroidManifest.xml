@@ -3,6 +3,7 @@
     package="edu.neu.charitable">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
@@ -15,8 +16,40 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Charitable">
-        <activity android:name=".DirectDonationHome"></activity>
-        <activity android:name=".RegisterForPool"
+        <service
+            android:name=".utils.NotificationListener"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="edu.neu.charitable.NotificationListener" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".StartFirebaseAtBoot"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".utils.AlarmNotificationReceiver"
+            android:process=":remote" />
+
+        <service
+            android:name=".FireBaseBackgroundService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="edu.neu.charitable.FirebaseBackgroundService" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".DirectDonationHome" />
+        <activity
+            android:name=".RegisterForPool"
             android:screenOrientation="portrait">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
