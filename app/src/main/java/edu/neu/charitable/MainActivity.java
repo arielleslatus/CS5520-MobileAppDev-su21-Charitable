@@ -307,10 +307,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    public void navigateToShake(View view) {
-        startActivity(new Intent(this, Shake.class));
-    }
-
 
     /**
      * Populates charities to database. Too many for in csv, so only populating 10 to test.

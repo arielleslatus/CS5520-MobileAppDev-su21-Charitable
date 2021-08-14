@@ -7,11 +7,6 @@ public class User {
     public User(){
     }
 
-    public User(String fullName, String city, String email){
-        this.fullName = fullName;
-        this.city = city;
-        this.email = email;
-    }
 
     public User(String fullName, String city, String email, String username){
         this.fullName = fullName;
