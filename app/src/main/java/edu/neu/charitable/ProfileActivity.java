@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -58,8 +57,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         final TextView greetingTextView = (TextView) findViewById(R.id.greeting);
         final TextView fullNameTextView = (TextView) findViewById(R.id.fullName);
-        final TextView emailTextView = (TextView) findViewById(R.id.emailAdress);
+        final TextView emailTextView = (TextView) findViewById(R.id.emailAddress);
         final TextView cityTextView = (TextView) findViewById(R.id.city);
+        final TextView usernameTextView = (TextView) findViewById(R.id.usernameProfile);
 
         reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -69,11 +69,13 @@ public class ProfileActivity extends AppCompatActivity {
                     String fullName = userProfile.fullName;
                     String email = userProfile.email;
                     String city = userProfile.city;
+                    String username = userProfile.username;
 
                     greetingTextView.setText("Welcome, " + fullName + "!");
                     fullNameTextView.setText(fullName);
                     emailTextView.setText(email);
                     cityTextView.setText(city);
+                    usernameTextView.setText(username);
 
                 }
 
@@ -98,6 +100,7 @@ public class ProfileActivity extends AppCompatActivity {
                 i.putExtra("email",emailTextView.getText().toString());
                 i.putExtra("fullName", fullNameTextView.getText().toString());
                 i.putExtra("city",cityTextView.getText().toString());
+                i.putExtra("username", usernameTextView.getText().toString());
                 startActivity(i);
             }
         });
