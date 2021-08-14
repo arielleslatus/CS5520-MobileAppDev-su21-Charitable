@@ -95,10 +95,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
-    public void navigateToSecurityPreferences(View view) {
-        startActivity(new Intent(this, SecurityPreferences.class));
 
-    }
 
 
 }

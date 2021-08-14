@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/card_match"
+        android:id="@+id/pdd_card"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_margin="10dp"
@@ -30,11 +30,11 @@
                 android:layout_weight=".3">
 
                 <TextView
-                    android:id="@+id/match_text"
+                    android:id="@+id/pdd_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="John has matched Stay's donation to a charity!"
+                    android:text="John has thanked you for your gift!"
                     />
 
             </RelativeLayout>
@@ -44,7 +44,7 @@
                 android:layout_height="0dp"
                 android:layout_weight=".2">
                 <TextView
-                    android:id="@+id/match_time"
+                    android:id="@+id/pdd_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
@@ -68,13 +68,13 @@
                     android:layout_marginLeft="5dp">
 
                     <Button
-                        android:id="@+id/match_share"
+                        android:id="@+id/pdd_send"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_centerInParent="true"
-                        android:drawableLeft="@drawable/ic_baseline_campaign_24"
+                        android:drawableLeft="@drawable/ic_baseline_attach_money_24"
                         android:shape="oval"
-                        android:text="Share"
+                        android:text="Send Direct"
                         android:textSize="8sp"
                         android:layout_marginRight="5dp"
                         android:background="@drawable/round"
@@ -89,13 +89,13 @@
                     android:layout_marginEnd="5dp">
 
                     <Button
-                        android:id="@+id/match_applaud"
+                        android:id="@+id/pdd_read"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_centerInParent="true"
-                        android:drawableLeft="@drawable/ic_applause"
+                        android:drawableLeft="@drawable/ic_baseline_menu_book_24"
                         android:shape="oval"
-                        android:text="Applaud"
+                        android:text="Read"
                         android:textSize="8sp"
                         android:layout_marginRight="5dp"
                         android:background="@drawable/round"

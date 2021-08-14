@@ -1,5 +1,6 @@
 package edu.neu.charitable.utils;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -18,6 +19,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.util.Pools;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,6 +54,9 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     private final int VIEW_TYPE_DONATION = 1;
     private final int VIEW_TYPE_MATCH = 2;
     private final int VIEW_TYPE_GOAL_ACHIEVED = 3;
+    private final int VIEW_TYPE_POOL_DONATION = 4;
+    private final int VIEW_TYPE_POOL_MATCH = 5;
+    private final int VIEW_TYPE_THANK_YOU = 6;
 
     public List<Post> posts;
     private String current_user;
@@ -75,6 +81,15 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         } else if (viewType == VIEW_TYPE_MATCH) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_match, parent, false);
             return new FeedRecyclerViewAdapter.MatchViewHolder(view);
+        } else if (viewType == VIEW_TYPE_POOL_DONATION) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pool_donation_view, parent, false);
+            return new FeedRecyclerViewAdapter.PoolDonationViewHolder(view);
+        } else if (viewType == VIEW_TYPE_POOL_MATCH) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pool_match_view, parent, false);
+            return new FeedRecyclerViewAdapter.PoolMatchDonationViewHolder(view);
+        } else if (viewType == VIEW_TYPE_THANK_YOU) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pool_thank, parent, false);
+            return new FeedRecyclerViewAdapter.ThankYouViewHolder(view);
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_goal, parent, false);
             return new FeedRecyclerViewAdapter.GoalAcheivedViewHolder(view);
@@ -94,6 +109,18 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         } else if (holder instanceof FeedRecyclerViewAdapter.GoalAcheivedViewHolder) {
 
             bindGoalAchievedView(holder, position);
+
+        } else if (holder instanceof FeedRecyclerViewAdapter.PoolDonationViewHolder) {
+
+            bindPoolDonationView(holder, position);
+
+        } else if (holder instanceof FeedRecyclerViewAdapter.PoolMatchDonationViewHolder) {
+
+            bindPoolMatchDonationView(holder, position);
+
+        } else if (holder instanceof FeedRecyclerViewAdapter.ThankYouViewHolder) {
+
+            bindThankYouViewHolder(holder, position);
 
         } else {
 
@@ -116,6 +143,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             return VIEW_TYPE_DONATION;
         } else if (p.type.equalsIgnoreCase("match")) {
             return VIEW_TYPE_MATCH;
+        } else if (p.type.equalsIgnoreCase("pool")) {
+            return VIEW_TYPE_POOL_DONATION;
+        } else if (p.type.equalsIgnoreCase("match_pool")) {
+            return VIEW_TYPE_POOL_MATCH;
+        } else if  (p.type.equalsIgnoreCase("thank")) {
+            return VIEW_TYPE_THANK_YOU;
         } else {
             return VIEW_TYPE_GOAL_ACHIEVED;
         }
@@ -158,6 +191,66 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             buttonApplaud = (Button) itemView.findViewById(R.id.goal_applaud);
             donationPostCard = (CardView) itemView.findViewById(R.id.card_goal);
             timeText = (TextView) itemView.findViewById(R.id.goal_time);
+        }
+    }
+
+    private class PoolDonationViewHolder extends RecyclerView.ViewHolder {
+
+        public Button buttonMatch;
+        public Button buttonShare;
+        public Button buttonApplaud;
+        public TextView postText;
+        public TextView timeText;
+        public CardView donationPostCard;
+
+        public PoolDonationViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            postText = (TextView) itemView.findViewById(R.id.pool_text);
+            timeText = (TextView) itemView.findViewById(R.id.pool_time_applauds);
+            buttonMatch = (Button) itemView.findViewById(R.id.pool_match);
+            buttonShare= (Button) itemView.findViewById(R.id.pool_share);
+            buttonApplaud = (Button) itemView.findViewById(R.id.pool_applaud);
+            donationPostCard = (CardView) itemView.findViewById(R.id.pool_card);
+        }
+    }
+
+    private class PoolMatchDonationViewHolder extends RecyclerView.ViewHolder {
+
+        public Button buttonShare;
+        public Button buttonApplaud;
+        public TextView postText;
+        public TextView timeText;
+        public CardView donationPostCard;
+
+        public PoolMatchDonationViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            postText = (TextView) itemView.findViewById(R.id.pm_text);
+            timeText = (TextView) itemView.findViewById(R.id.pm_time);
+            buttonShare= (Button) itemView.findViewById(R.id.pm_share);
+            buttonApplaud = (Button) itemView.findViewById(R.id.pm_applaud);
+            donationPostCard = (CardView) itemView.findViewById(R.id.pm_card);
+
+        }
+    }
+
+    private class ThankYouViewHolder extends RecyclerView.ViewHolder {
+        public Button buttonSend;
+        public Button buttonRead;
+        public TextView postText;
+        public TextView timeText;
+        public CardView card;
+
+        public ThankYouViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            postText = (TextView) itemView.findViewById(R.id.pdd_text);
+            timeText = (TextView) itemView.findViewById(R.id.pdd_time);
+            buttonSend = (Button) itemView.findViewById(R.id.pdd_send);
+            buttonRead = (Button) itemView.findViewById(R.id.pdd_read);
+            card = (CardView) itemView.findViewById(R.id.pdd_card);
+
         }
     }
 
@@ -257,6 +350,60 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         });
     }
 
+    private void bindPoolDonationView(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Post post = posts.get(position);
+
+        Button buttonMatch = ((PoolDonationViewHolder) holder).buttonMatch;
+        Button buttonShare = ((PoolDonationViewHolder) holder).buttonShare;
+        Button buttonApplaud = ((PoolDonationViewHolder) holder).buttonApplaud;
+        TextView postText = ((PoolDonationViewHolder) holder).postText;
+        TextView timeText = ((PoolDonationViewHolder) holder).timeText;
+        CardView donationPostCard = ((PoolDonationViewHolder) holder).donationPostCard;
+
+        //Get user and fill in information this set listeners for the buttons
+        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User u = snapshot.getValue(User.class);
+
+                    mDB.getReference("Users").child(post.text).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                User to = snapshot.getValue(User.class);
+
+                                if (post.user.equals(current_user)) {
+                                    postText.setText("You donated directly to @" + to.username + "!");
+
+                                } else {
+                                    postText.setText("@" + u.username + " donated directly to " + to.username + "!");
+                                }
+
+                                LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                                timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+                                applaudListener(holder, buttonApplaud, post);
+                                matchOnClickListener(holder, buttonMatch, post);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
     private void bindGoalAchievedView(@NonNull RecyclerView.ViewHolder holder, int position) {
         Post post = posts.get(position);
 
@@ -311,18 +458,185 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     User u = snapshot.getValue(User.class);
-                    if (post.user.equals(current_user)) {
-                        postText.setText("You matched a dontation to " + post.charity + "!");
 
-                    } else {
-                        postText.setText("@" + u.username + " matched a dontation to " + post.charity + "!");
-                    }
+                    mDB.getReference("Users").child(post.matchedUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
-                    timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+                            if (snapshot.exists()) {
+                                User m = snapshot.getValue(User.class);
+                                String mId = snapshot.getKey();
 
-                    applaudListener(holder, buttonApplaud, post);
+                                if (post.user.equals(current_user)) {
+
+                                    if (m.username.equals(u.username)) {
+                                        postText.setText("You matched your own donation to " + post.charity + "!");
+                                    } else {
+                                        postText.setText("You matched @" + m.username + "'s donation to " + post.charity + "!");
+                                    }
+
+                                } else {
+
+                                    if (mId.equals(current_user)) {
+                                        postText.setText("@" + u.username + " matched your donation to " + post.charity + "!");
+                                    } else {
+                                        postText.setText("@" + u.username + " matched @" + m.username + "'s donation to " + post.charity + "!");
+                                    }
+                                }
+
+                                LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                                timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+                                applaudListener(holder, buttonApplaud, post);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void bindPoolMatchDonationView(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Post post = posts.get(position);
+
+        Button buttonShare = ((PoolMatchDonationViewHolder) holder).buttonShare;
+        Button buttonApplaud = ((PoolMatchDonationViewHolder) holder).buttonApplaud;
+        TextView postText = ((PoolMatchDonationViewHolder) holder).postText;
+        TextView timeText = ((PoolMatchDonationViewHolder) holder).timeText;
+        CardView donationPostCard = ((PoolMatchDonationViewHolder) holder).donationPostCard;
+
+
+
+        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User u = snapshot.getValue(User.class);
+
+                    mDB.getReference("Users").child(post.matchedUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                User to = snapshot.getValue(User.class);
+                                String toId = snapshot.getKey();
+
+                                if (post.user.equals(current_user)) {
+
+                                    if (u.username.equals(to.username)) {
+                                        postText.setText("You matched your own gift to our pool!");
+                                    } else {
+                                        postText.setText("You matched @" + to.username + "'s gift to our pool!");
+                                    }
+
+                                } else {
+
+                                    if (toId.equals(current_user)) {
+                                        postText.setText("@" + u.username +  "matched your gift to our pool!");
+                                    } else {
+                                        postText.setText("@" + u.username +  "matched @" + to.username + "'s gift to our pool!");
+                                    }
+                                }
+
+                                LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                                timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+                                applaudListener(holder, buttonApplaud, post);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void bindThankYouViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Post post = posts.get(position);
+
+        Button buttonRead = ((ThankYouViewHolder) holder).buttonRead;
+        Button buttonSend = ((ThankYouViewHolder) holder).buttonSend;
+        TextView postText = ((ThankYouViewHolder) holder).postText;
+        TextView timeText = ((ThankYouViewHolder) holder).timeText;
+        CardView card = ((ThankYouViewHolder) holder).card;
+
+        String me = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+        timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User u = snapshot.getValue(User.class);
+
+                    mDB.getReference("Users").child(post.matchedUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                User to = snapshot.getValue(User.class);
+                                String toId = snapshot.getKey();
+
+                                    if (toId.equals(current_user)) {
+                                        postText.setText("@" + u.username +  " thanked you for your gift!");
+                                    } else {
+                                        postText.setText("@" + u.username +  " thanked @" + to.username + " for their gift!");
+                                    }
+
+
+                                LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
+                                timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
+
+                                buttonSend.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(v.getContext(), DonateDummy.class);
+                                        intent.putExtra("AUTOFILL_CHARITY" , "Direct to User");
+                                        intent.putExtra("AUTOFILL_AMOUNT", Float.toString(post.amount));
+                                        intent.putExtra("DIRECT_TO_USER", post.user);
+                                        v.getContext().startActivity(intent);
+                                    }
+                                });
+
+                                buttonRead.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(((ThankYouViewHolder) holder).card.getContext());
+                                        builder.setTitle("@" + u.username + " sent:").setMessage(post.text);
+
+                                        AlertDialog alert = builder.create();
+                                        alert.show();
+                                    }
+                                });
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
             }
 
@@ -376,7 +690,11 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DonateDummy.class);
-                intent.putExtra("AUTOFILL_CHARITY" ,post.charity);
+                if (!post.charity.equals("Direct to User")) {
+                    intent.putExtra("AUTOFILL_CHARITY" ,post.charity);
+                } else {
+                    intent.putExtra("AUTOFILL_CHARITY" , "Charitable Pool Direct");
+                }
                 intent.putExtra("AUTOFILL_AMOUNT", Float.toString(post.amount));
                 intent.putExtra("MATCH", post.user);
                 v.getContext().startActivity(intent);

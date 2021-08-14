@@ -52,6 +52,8 @@ public class Home extends AppCompatActivity {
                     break;
                 case R.id.settings:
                     selectedFragment = new Settings();
+                    //startActivity(new Intent(Home.this, SecurityPreferences.class));
+
                     break;
             }
             // It will help to replace the
@@ -67,4 +69,17 @@ public class Home extends AppCompatActivity {
     public void openProfile(View view) {
         startActivity(new Intent(this , ProfileActivity.class));
     }
+
+    public void openDonation(View view) {
+        Intent intent = new Intent(this, DonateDummy.class);
+        startActivity(intent);
+    }
+
+    public void openPool(View view) {
+        Intent intent = new Intent(this, DonateDummy.class);
+        intent.putExtra("AUTOFILL_CHARITY", "Charitable Pool Direct");
+        intent.putExtra("AUTOFILL_AMOUNT", Double.toString(10.00));
+        startActivity(intent);
+    }
+
 }

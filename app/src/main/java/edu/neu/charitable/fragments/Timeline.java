@@ -22,6 +22,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nambimobile.widgets.efab.ExpandableFab;
+import com.nambimobile.widgets.efab.ExpandableFabLayout;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -63,7 +65,7 @@ public class Timeline extends Fragment {
     private FirebaseDatabase mDb;
     private FeedRecyclerViewAdapter adapter;
 
-    private FloatingActionButton profileButton;
+    private ExpandableFab profileButton;
     private ConstraintLayout goalCard;
 
     private Goal goal;
@@ -314,8 +316,4 @@ public class Timeline extends Fragment {
 
 
     }
-
-
-//    Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(imageView);
-
 }

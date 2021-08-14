@@ -67,7 +67,8 @@
         android:text="@string/exhaust"
         android:textColor="@color/dark_gray"
         android:drawableRight="@drawable/ic_baseline_local_shipping_24"
-        android:onClick="donate"/>
+        android:onClick="donate"
+        android:background="@drawable/round"/>
 
     <Button
         android:id="@+id/donate_back"
@@ -84,7 +85,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:textColor="@color/dark_gray"
         android:drawableTop="@drawable/ic_baseline_home_24"
-        android:onClick="back"/>
+        android:onClick="back"
+        android:background="@drawable/round"/>
 
 
 
