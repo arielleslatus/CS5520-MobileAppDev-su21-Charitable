@@ -50,6 +50,7 @@ import java.util.Map;
 import edu.neu.charitable.models.Charity;
 import edu.neu.charitable.models.CharityString;
 import edu.neu.charitable.models.User;
+import edu.neu.charitable.utils.NotificationListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -131,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             progressBar.setVisibility(View.VISIBLE);
             //FireBaseBackgroundService.startActionFoo(MainActivity.this, email, password);
             FireBaseBackgroundService.startActionBaz(MainActivity.this, email, password);
+            NotificationListener.startActionFoo(MainActivity.this, email, password);
             autoLogin(email, password);
         }
 

@@ -16,18 +16,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Charitable">
+        <service
+            android:name=".utils.NotificationListener"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="edu.neu.charitable.NotificationListener" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".StartFirebaseAtBoot"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver
-            android:process=":remote"
-            android:name=".utils.AlarmNotificationReceiver"/>
+            android:name=".utils.AlarmNotificationReceiver"
+            android:process=":remote" />
 
         <service
             android:name=".FireBaseBackgroundService"

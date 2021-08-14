@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.View;
 
+import edu.neu.charitable.utils.NotificationListener;
+
 public class StartFirebaseAtBoot extends BroadcastReceiver {
 
     @Override
@@ -17,8 +19,8 @@ public class StartFirebaseAtBoot extends BroadcastReceiver {
         String email = preferences.getString("email", null);
         String password = preferences.getString("password", null);
         if (email != null && !email.equals("") && password != null && !password.equals("")) {
-            //FireBaseBackgroundService.startActionFoo(context, email, password);
             FireBaseBackgroundService.startActionBaz(context, email, password);
+            NotificationListener.startActionFoo(context, email, password);
         }
         //context.startService(new Intent(context, FireBaseBackgroundService.class));
     }
