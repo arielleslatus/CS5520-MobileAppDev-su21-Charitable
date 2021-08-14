@@ -574,14 +574,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
 
                                 // Create a clickable string where only the charity name will be clickable.
-                                Log.d(TAG, "textContent: " + textContent);
-                                Log.d(TAG, "textContent.length " + textContent.length());
-
-
                                 SpannableString ss = new SpannableString(textContent);
-                                Log.d(TAG, "ss.length: " + ss.length());
-
-
                                 ClickableSpan clickableSpan = new ClickableSpan() {
                                     @Override
                                     public void onClick(View textView) {
