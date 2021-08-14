@@ -2,8 +2,8 @@ package edu.neu.charitable.utils;
 
 import android.app.IntentService;
 import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +22,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import edu.neu.charitable.FireBaseBackgroundService;
 import edu.neu.charitable.Home;
 import edu.neu.charitable.R;
 import edu.neu.charitable.models.Donation;
@@ -175,7 +174,7 @@ public class NotificationListener extends IntentService {
                                                     PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0, intent, 0);
 
 
-                                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationListener.this, "reminder")
+                                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationListener.this, "reminder");
                                                     if (newPost.type.equals("donation")) {
                                                                 builder
                                                                 .setSmallIcon(R.drawable.ic_vines)

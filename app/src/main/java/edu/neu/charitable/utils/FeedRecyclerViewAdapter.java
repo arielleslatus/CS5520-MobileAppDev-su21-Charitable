@@ -338,16 +338,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
 
 
-
-
-
-
-
-
-
-
-
-
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
                     timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
@@ -536,7 +526,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                 if (snapshot.exists()) {
                     User u = snapshot.getValue(User.class);
 
-                    Log.d(TAG, "U: " + u.toString());
 
                     mDB.getReference("Users").child(post.matchedUser).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -545,12 +534,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                             if (snapshot.exists()) {
                                 User m = snapshot.getValue(User.class);
                                 String mId = snapshot.getKey();
-
-                                Log.d(TAG, "m: " + m.toString());
-                                Log.d(TAG, "mId: " + mId.toString());
-                                Log.d(TAG, "m.username: " + m.username);
-                                Log.d(TAG, "current_user: " + current_user.toString());
-
 
                                 String textContent = "";
                                 int startSpan = 0;
@@ -793,6 +776,9 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         buttonApplaud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "In applaudListener [on feed], clicked applaud. This is the post:");
+                Log.d(TAG, post.toString());
+
                 FirebaseDatabase.getInstance().getReference("user_posts")
                         .child(post.user)
                         .orderByChild("timestamp")

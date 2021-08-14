@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import edu.neu.charitable.DonateDummy;
-import edu.neu.charitable.Home;
 import edu.neu.charitable.R;
 import edu.neu.charitable.models.Post;
 import edu.neu.charitable.models.User;
@@ -81,11 +80,37 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
     }
 
 
-    //Adds onclick listener to applaud buttons generated in recyclerView
+    // Adds onclick listener to applaud buttons generated in recyclerView
     private void applaudListener(RecyclerView.ViewHolder holder, Button buttonApplaud, Post post) {
+        Log.d(TAG, "Adding applaud listener....");
         buttonApplaud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "In applaudListener, clicked applaud. This is the post:");
+                Log.d(TAG, post.toString());
+
+//                String username = post.user;
+//
+//                // Get the user ID from the username
+//                FirebaseDatabase.getInstance().getReference("user_posts")
+//                        .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        if (snapshot.exists()) {
+//
+//
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
+
+
+
                 FirebaseDatabase.getInstance().getReference("user_posts")
                         .child(post.user)
                         .orderByChild("timestamp")
@@ -93,23 +118,38 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
                         .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                Log.d(TAG, "In applaudListener, onDataChange");
+
                                 if (snapshot.exists()) {
                                     String postKey = "";
                                     for (DataSnapshot ds : snapshot.getChildren()) {
                                         postKey = ds.getKey();
+                                        Log.d(TAG, "In applaudListener, postKey:" + postKey);
                                     }
-                                    Post newPost = new Post(post.timestamp,post.type,post.user,post.charity,post.matchedUser,post.amount,post.text,post.numApplauds + 1);
+
+                                    Post newPost = new Post(post.timestamp, post.type, post.user,
+                                            post.charity, post.matchedUser, post.amount, post.text,
+                                            post.numApplauds + 1);
+                                    Log.d(TAG, "In applaudListener, user_posts, snapshot exists.");
+
+                                    Log.d(TAG, "Updating post " + postKey + " with +1 applaud");
                                     FirebaseDatabase.getInstance().getReference("user_posts")
                                             .child(post.user)
                                             .child(postKey)
                                             .setValue(newPost).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            Intent intent = new Intent(v.getContext(), Home.class);
-                                            v.getContext().startActivity(intent);
+//                                            Log.d(TAG, "You applauded! Refresh dataset.");
+                                            notifyDataSetChanged();
                                         }
                                     });
                                 }
+
+                                else {
+                                    Log.d(TAG, "snapshot.exists() does not exist");
+                                }
+
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
@@ -167,49 +207,6 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
                     String postTextContent = userText + " donated to " + post.charity + "!";
                     Log.d(TAG, "... postTextContent:" + postTextContent);
 
-
-//                    // Create a clickable string where only the charity name will be clickable.
-//                    SpannableString ss = new SpannableString(postTextContent);
-//                    ClickableSpan clickableSpan = new ClickableSpan() {
-//                        @Override
-//                        public void onClick(View textView) {
-//
-//                            // On click of the charity name, start a new activity,
-//                            // the charity profile of the charity that was clicked on
-//                            Intent loadCharityIntent = new Intent(textView.getContext(), CharityProfile.class);
-//                            Bundle extras = new Bundle();
-//
-//                            // Need to make an asynchronous call/not launch the activity
-//                            // until we get the ID of the charity to launch it
-//                            getCharityID(new MyCallback() {
-//                                @Override
-//                                public void onCallback(String value) {
-//                                    String charityIDtoLaunch = value;
-//
-//                                    // Load the string into the intent and start the activity!
-//                                    extras.putString("charityID", charityIDtoLaunch);
-//                                    loadCharityIntent.putExtras(extras);
-//                                    textView.getContext().startActivity(loadCharityIntent);
-//                                }
-//                            }, post.charity);
-//
-//                        }
-//                        @Override
-//                        public void updateDrawState(TextPaint ds) {
-//                            super.updateDrawState(ds);
-//                            ds.setUnderlineText(false);
-//                        }
-//                    };
-//
-//                    // Get location of where the charity name is, within the post text content. Make that clickable.
-//                    int spanStart = userText.length() + 12;
-//                    int spanEnd = post.charity.length() + spanStart;
-//                    ss.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                    // Set that as the text content.
-//                    postTextView.setText(ss);
-//                    postTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
                     postTextView.setText(postTextContent);
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
@@ -231,44 +228,5 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
         });
     }
 
-
-//    private void getCharityID(MyCallback myCallback, String charityName) {
-//        Log.d(TAG, "Trying to find the ID for charity with name: " + charityName);
-//        DatabaseReference referenceCharitiesDB = FirebaseDatabase.getInstance().getReference("Charities");
-//        referenceCharitiesDB.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Object charityDataSnapshot = dataSnapshot.getValue(Object.class);
-//                if (charityDataSnapshot != null) {
-//                    HashMap<String,Object> charityDB = (HashMap<String,Object>) charityDataSnapshot;
-//
-//                    Iterator it = charityDB.entrySet().iterator();
-//                    while (it.hasNext()) {
-//                        Map.Entry pair = (Map.Entry)it.next();
-//                        Log.d(TAG, "Checking if this key-value pair is the charity chosen: " + pair.getKey().toString());
-//                        String charityIDFromDB = pair.getKey().toString();
-//                        HashMap<String,Object> charityInfoFromDB = (HashMap<String, Object>) pair.getValue();
-//                        String charityNameFromDB = (String) charityInfoFromDB.get("name");
-//
-//                        if (charityNameFromDB.equals(charityName)) {
-//                            Log.d(TAG, "Charity has been found in DB: " + charityName);
-//                            String charityIDtoLaunch = pair.getKey().toString();
-//                            myCallback.onCallback(charityIDtoLaunch);
-//                            Log.d(TAG, "\tcharityIDtoLaunch: " + charityIDtoLaunch);
-//                            break;
-//                        }
-//
-//                        it.remove();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                System.out.println("The read failed: " + databaseError.getCode());
-//            }
-//
-//        });
-//    }
 
 }
