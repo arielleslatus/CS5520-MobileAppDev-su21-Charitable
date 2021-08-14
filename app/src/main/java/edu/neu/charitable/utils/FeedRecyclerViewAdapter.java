@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -534,6 +533,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                     User u = snapshot.getValue(User.class);
 
 
+
+
                     mDB.getReference("Users").child(post.matchedUser).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -560,7 +561,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                                 else if (!post.user.equals(current_user) && mId.equals(current_user)) {
                                     textContent = "@" + u.username + " matched your donation to " + post.charity + "!";
-                                    startSpan = 27 + m.username.length();
+                                    startSpan = 27 + u.username.length();
                                     endSpan = startSpan + post.charity.length();
                                 }
 
@@ -571,14 +572,21 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                                 }
 
-                                shareOnClickListener(buttonShare, textContent);
-
 
                                 // Create a clickable string where only the charity name will be clickable.
+                                Log.d(TAG, "textContent: " + textContent);
+                                Log.d(TAG, "textContent.length " + textContent.length());
+
+
                                 SpannableString ss = new SpannableString(textContent);
+                                Log.d(TAG, "ss.length: " + ss.length());
+
+
                                 ClickableSpan clickableSpan = new ClickableSpan() {
                                     @Override
                                     public void onClick(View textView) {
+
+                                        Log.d(TAG, "onClick in clickable span");
 
                                         // On click of the charity name, start a new activity,
                                         // the charity profile of the charity that was clicked on
@@ -613,6 +621,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 // Get location of where the charity name is, within the post text content. Make that clickable.
                                 ss.setSpan(clickableSpan, startSpan, endSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+
                                 // Set that as the text content.
                                 postText.setText(ss);
                                 postText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -621,6 +630,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
                                 timeText.setText(formatter.format(dt) + "  -  " + Integer.toString(post.numApplauds) + " Claps");
 
+
+                                shareOnClickListener(buttonShare, textContent);
                                 applaudListener(holder, buttonApplaud, post);
                             }
                         }
