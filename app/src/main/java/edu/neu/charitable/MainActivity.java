@@ -282,6 +282,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         ed.putString("password", password);
                         ed.apply();
 
+                        NotificationListener.startActionFoo(MainActivity.this, email, password);
+
 
                         //Check if this user is normal or part of donation pool
                         FirebaseDatabase.getInstance().getReference("user_pool").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {

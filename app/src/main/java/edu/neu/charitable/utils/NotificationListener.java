@@ -174,14 +174,17 @@ public class NotificationListener extends IntentService {
                                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                     PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0, intent, 0);
 
-                                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationListener.this, "reminder")
-                                                            .setSmallIcon(R.drawable.ic_vines)
-                                                            .setContentTitle("Charitable")
-                                                            .setContentText("New " + newPost.type)
-                                                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                                            .setContentIntent(pendingIntent)
-                                                            .setChannelId("reminder")
-                                                            .setAutoCancel(true);
+
+
+                                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationListener.this, "reminder")
+                                                                .setSmallIcon(R.drawable.ic_vines)
+                                                                .setContentTitle("Charitable")
+                                                                .setContentText("New " + newPost.type)
+                                                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                                                .setContentIntent(pendingIntent)
+                                                                .setChannelId("reminder")
+                                                                .setAutoCancel(true);
+                                                    
 
                                                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(NotificationListener.this);
                                                     notificationManagerCompat.notify(3, builder.build());
