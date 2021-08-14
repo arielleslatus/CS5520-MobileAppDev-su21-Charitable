@@ -113,11 +113,7 @@ public class DonateDummy extends AppCompatActivity implements SensorEventListene
             this.directToUser = false;
         }
 
-
-
         // Shake Sensor
-        this.count = 0;
-
         this.mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Objects.requireNonNull(this.mSensorManager).registerListener(this.mSensorListener, this.mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
@@ -398,7 +394,7 @@ public class DonateDummy extends AppCompatActivity implements SensorEventListene
 
 
     public void handleShakeEvent() {
-        //get num users
+        startActivity(new Intent(this, Home.class));
         this.mDB.getReference("Charities").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -406,7 +402,6 @@ public class DonateDummy extends AppCompatActivity implements SensorEventListene
                     long num_charities = snapshot.getChildrenCount();
                     if (num_charities > 0) {
                         int random = ThreadLocalRandom.current().nextInt(1, (int) (num_charities + 1));
-                        //get the randomly selected recipient
                         mDB.getReference("pool_charity").child(Integer.toString(random)).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -418,27 +413,20 @@ public class DonateDummy extends AppCompatActivity implements SensorEventListene
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 if (snapshot.exists()) {
                                                     String charityName = snapshot.getValue(String.class);
-                                                    EditText charityNameEditText = findViewById(R.id.donate_charity);
-                                                    charityNameEditText.setText(charityName);
+                                                    Intent intent = new Intent(findViewById(R.id.donateDummyView).getContext(), DonateDummy.class);
+                                                    intent.putExtra("AUTOFILL_CHARITY", charityName);
+                                                    findViewById(R.id.donateDummyView).getContext().startActivity(intent);
                                                 }
                                             }
-
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
-
                                             }
                                         });
-
-
-
                                     } else {
                                         progressBar.setVisibility(View.GONE);
                                     }
-                                } else {
-                                    System.out.println("snapshot does not exist");
                                 }
                             }
-
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -484,9 +472,6 @@ public class DonateDummy extends AppCompatActivity implements SensorEventListene
     }
 
     private void randomCharity(String charity) {
-
-        System.out.println("in random charity method");
-
     //get num users
         this.mDB.getReference("Charities").addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
