@@ -12,6 +12,8 @@ public class Post {
     public String type; // donation, match, goal_complete, charity_help, charity_project
     public String user;
     public String charity;
+
+    // If the Post type is "Match", then this is the user who originally donated. Otherwise, null.
     public String matchedUser;
     public float amount;
     public String text;
@@ -31,7 +33,7 @@ public class Post {
         this.numApplauds = numApplauds;
     }
 
-    //creates a post with current time
+    // creates a post with current time
     public Post(String type, String user, String charity, String matchedUser, float amount, String text, int numApplauds) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         this.timestamp = timestamp.getTime();
@@ -44,5 +46,10 @@ public class Post {
         this.numApplauds = numApplauds;
     }
 
+
+    public String toString() {
+        return this.timestamp + ", type: " + this.type  + " , user:" + this.user  + ", charity: " + this.charity +
+                " " + this.amount + " " + this.text;
+    }
 
 }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/donateDummyView"
     tools:context=".DonateDummy">
 
     <TextView
@@ -36,7 +37,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/donate_banner"
-        app:layout_constraintBottom_toTopOf="@id/donate_amount"/>
+        app:layout_constraintBottom_toTopOf="@id/shake"/>
+
+    <TextView
+        android:id="@+id/shake"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(Or shake your phone for shuffled selection!)"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/donate_charity"
+        app:layout_constraintBottom_toTopOf="@id/donate_amount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <EditText
         android:id="@+id/donate_amount"
@@ -49,7 +61,7 @@
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/donate_charity"
+        app:layout_constraintTop_toBottomOf="@+id/shake"
         app:layout_constraintBottom_toTopOf="@id/donate_send"/>
 
     <Button
@@ -87,6 +99,20 @@
         android:drawableTop="@drawable/ic_baseline_home_24"
         android:onClick="back"
         android:background="@drawable/round"/>
+
+    <!--Button
+        android:id="@+id/testShake"
+        android:layout_width="100dp"
+        android:layout_height="49dp"
+        android:onClick="handleShakeEvent"
+        android:text="testShake"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/donate_back" /!-->
+
+
 
 
 

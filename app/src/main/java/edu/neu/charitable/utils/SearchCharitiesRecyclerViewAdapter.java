@@ -27,7 +27,8 @@ import edu.neu.charitable.DonateDummy;
 import edu.neu.charitable.R;
 import edu.neu.charitable.models.Charity;
 
-public class CharitiesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class SearchCharitiesRecyclerViewAdapter extends RecyclerView
+        .Adapter<RecyclerView.ViewHolder> {
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
@@ -35,7 +36,7 @@ public class CharitiesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public List<Charity> chars;
     private FirebaseDatabase mDB;
 
-    public CharitiesRecyclerViewAdapter(List<Charity> chars) {
+    public SearchCharitiesRecyclerViewAdapter(List<Charity> chars) {
         this.chars = chars;
         mDB = FirebaseDatabase.getInstance();
     }
@@ -44,16 +45,16 @@ public class CharitiesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_ITEM) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_charity, parent, false);
-            return new CharitiesRecyclerViewAdapter.ItemViewHolder(view);
+            return new SearchCharitiesRecyclerViewAdapter.ItemViewHolder(view);
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false);
-            return new CharitiesRecyclerViewAdapter.LoadingViewHolder(view);
+            return new SearchCharitiesRecyclerViewAdapter.LoadingViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof CharitiesRecyclerViewAdapter.ItemViewHolder) {
+        if (holder instanceof SearchCharitiesRecyclerViewAdapter.ItemViewHolder) {
 
             Charity chr = chars.get(position);
 
@@ -121,8 +122,8 @@ public class CharitiesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             });
 
 
-        } else if (holder instanceof CharitiesRecyclerViewAdapter.LoadingViewHolder) {
-            ((CharitiesRecyclerViewAdapter.LoadingViewHolder) holder).progressBar.setVisibility(View.VISIBLE);
+        } else if (holder instanceof SearchCharitiesRecyclerViewAdapter.LoadingViewHolder) {
+            ((SearchCharitiesRecyclerViewAdapter.LoadingViewHolder) holder).progressBar.setVisibility(View.VISIBLE);
         }
 
     }

@@ -1,19 +1,18 @@
 package edu.neu.charitable.fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -22,15 +21,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import edu.neu.charitable.R;
 import edu.neu.charitable.models.Charity;
 import edu.neu.charitable.models.User;
-import edu.neu.charitable.utils.CharitiesRecyclerViewAdapter;
-import edu.neu.charitable.utils.UsersRecyclerViewAdapter;
+import edu.neu.charitable.utils.SearchCharitiesRecyclerViewAdapter;
+import edu.neu.charitable.utils.SearchUsersRecyclerViewAdapter;
 
 public class Search extends Fragment {
+
+    String TAG = "SearchFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -46,11 +46,11 @@ public class Search extends Fragment {
     private TextView query;
     private Button button;
     private FirebaseDatabase mDB;
-    UsersRecyclerViewAdapter adapter;
+    SearchUsersRecyclerViewAdapter adapter;
 
     private ArrayList<Charity> chars;
     private RecyclerView rvChars;
-    CharitiesRecyclerViewAdapter adapterC;
+    SearchCharitiesRecyclerViewAdapter adapterC;
 
     private ProgressBar progressBar;
 
@@ -97,14 +97,14 @@ public class Search extends Fragment {
         rvUsers = view.findViewById(R.id.search_users_rv);
         rvUsers.hasFixedSize();
         rvUsers.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        adapter = new UsersRecyclerViewAdapter(users);
+        adapter = new SearchUsersRecyclerViewAdapter(users);
         rvUsers.setAdapter(adapter);
 
         //set up charity recycler view
         rvChars = view.findViewById(R.id.search_charities_rv);
         rvChars.hasFixedSize();
         rvChars.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        adapterC = new CharitiesRecyclerViewAdapter(chars);
+        adapterC = new SearchCharitiesRecyclerViewAdapter(chars);
         rvChars.setAdapter(adapterC);
 
         return view;
@@ -209,6 +209,7 @@ public class Search extends Fragment {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Log.d(TAG, "searching for charities with name:" + searchFor);
                             if (snapshot.exists()) {
                                 ArrayList<Charity> foundC = new ArrayList<>();
                                 for (DataSnapshot ds: snapshot.getChildren()) {

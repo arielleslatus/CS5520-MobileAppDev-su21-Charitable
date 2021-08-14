@@ -2,7 +2,13 @@ package edu.neu.charitable.utils;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.provider.ContactsContract;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.util.Pools;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,22 +26,23 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-import java.security.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
+import edu.neu.charitable.CharityProfile;
 import edu.neu.charitable.DonateDummy;
 import edu.neu.charitable.Home;
 import edu.neu.charitable.R;
-import edu.neu.charitable.fragments.Timeline;
 import edu.neu.charitable.models.Post;
 import edu.neu.charitable.models.User;
 
@@ -55,6 +60,10 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     private FirebaseDatabase mDB;
     private String current_user;
 
+    private String charityIDtoLaunch;
+
+    private String TAG = "FeedRecyclerViewAdapter DebugAlice";
+
     public FeedRecyclerViewAdapter(List<Post> posts) {
         this.posts = posts;
         mDB = FirebaseDatabase.getInstance();
@@ -68,7 +77,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             return new FeedRecyclerViewAdapter.LoadingViewHolder(view);
         } else if (viewType == VIEW_TYPE_DONATION) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_donation, parent, false);
-            return new FeedRecyclerViewAdapter.DonationViewHolder(view);
+            return new DonationViewHolder(view);
         } else if (viewType == VIEW_TYPE_MATCH) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_match, parent, false);
             return new FeedRecyclerViewAdapter.MatchViewHolder(view);
@@ -89,7 +98,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof FeedRecyclerViewAdapter.DonationViewHolder) {
+        if (holder instanceof DonationViewHolder) {
 
             bindDonationView(holder, position);
 
@@ -145,26 +154,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    private class DonationViewHolder extends RecyclerView.ViewHolder {
-
-        public Button buttonMatch;
-        public Button buttonShare;
-        public Button buttonApplaud;
-        public TextView postText;
-        public TextView timeText;
-        public CardView donationPostCard;
-
-        public DonationViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            postText = (TextView) itemView.findViewById(R.id.donation_text);
-            timeText = (TextView) itemView.findViewById(R.id.donation_time_applauds);
-            buttonMatch = (Button) itemView.findViewById(R.id.donation_match);
-            buttonShare= (Button) itemView.findViewById(R.id.donation_share);
-            buttonApplaud = (Button) itemView.findViewById(R.id.donation_applaud);
-            donationPostCard = (CardView) itemView.findViewById(R.id.donation_card);
-        }
-    }
 
     private class MatchViewHolder extends RecyclerView.ViewHolder {
 
@@ -239,7 +228,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             postText = (TextView) itemView.findViewById(R.id.pm_text);
             timeText = (TextView) itemView.findViewById(R.id.pm_time);
-            buttonShare= (Button) itemView.findViewById(R.id.pm_share);
+            buttonShare = (Button) itemView.findViewById(R.id.pm_share);
             buttonApplaud = (Button) itemView.findViewById(R.id.pm_applaud);
             donationPostCard = (CardView) itemView.findViewById(R.id.pm_card);
 
@@ -281,23 +270,83 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         Button buttonMatch = ((DonationViewHolder) holder).buttonMatch;
         Button buttonShare = ((DonationViewHolder) holder).buttonShare;
         Button buttonApplaud = ((DonationViewHolder) holder).buttonApplaud;
-        TextView postText = ((DonationViewHolder) holder).postText;
+        TextView postTextView = ((DonationViewHolder) holder).postText;
         TextView timeText = ((DonationViewHolder) holder).timeText;
         CardView donationPostCard = ((DonationViewHolder) holder).donationPostCard;
 
 
-        //Get user and fill in information this set listeners for the buttons
-        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+        // Get user and fill in information this set listeners for the buttons
+        FirebaseDatabase.getInstance().getReference("Users").child(post.user)
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    User u = snapshot.getValue(User.class);
-                    if (post.user.equals(current_user)) {
-                        postText.setText("You donated to " + post.charity + "!");
 
-                    } else {
-                        postText.setText("@" + u.username + " donated to " + post.charity + "!");
+                    // Figure out if we should use 1st or 3rd person based on logged in user.
+                    User u = snapshot.getValue(User.class);
+                    String userText = "You";
+                    if (!post.user.equals(current_user)) {
+                        userText = "@" + u.username;
                     }
+
+                    String postTextContent = userText + " donated to " + post.charity + "!";
+
+                    // Create a clickable string where only the charity name will be clickable.
+                    SpannableString ss = new SpannableString(postTextContent);
+                    ClickableSpan clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View textView) {
+
+                            // On click of the charity name, start a new activity,
+                            // the charity profile of the charity that was clicked on
+                            Intent loadCharityIntent = new Intent(textView.getContext(), CharityProfile.class);
+                            Bundle extras = new Bundle();
+
+                            // Placeholder
+                            charityIDtoLaunch = "Error Finding Charity";
+
+                            // Need to make an asynchronous call/not launch the activity
+                            // until we get the ID of the charity to launch it
+                            getCharityID(new MyCallback() {
+                                @Override
+                                public void onCallback(String value) {
+                                    charityIDtoLaunch = value;
+
+                                    // Load the string into the intent and start the activity!
+                                    extras.putString("charityID", charityIDtoLaunch);
+                                    loadCharityIntent.putExtras(extras);
+                                    textView.getContext().startActivity(loadCharityIntent);
+                                }
+                            }, post.charity);
+
+                        }
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
+                        }
+                    };
+
+                    // Get location of where the charity name is, within the post text content. Make that clickable.
+                    int spanStart = userText.length() + 12;
+                    int spanEnd = post.charity.length() + spanStart;
+                    ss.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                    // Set that as the text content.
+                    postTextView.setText(ss);
+                    postTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+
+
+
+
+
+
+
+
+
+
+
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
@@ -312,6 +361,13 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                 Toast.makeText(((DonationViewHolder) holder).donationPostCard.getContext(), error.toString(), Toast.LENGTH_LONG).show();
             }
         });
+
+
+
+
+
+
+
     }
 
     private void bindPoolDonationView(@NonNull RecyclerView.ViewHolder holder, int position) {
@@ -373,7 +429,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         Button buttonShare = ((GoalAcheivedViewHolder) holder).buttonShare;
         Button buttonApplaud = ((GoalAcheivedViewHolder) holder).buttonApplaud;
-        TextView postText = ((GoalAcheivedViewHolder) holder).postText;
+        TextView postTextView = ((GoalAcheivedViewHolder) holder).postText;
         TextView timeText = ((GoalAcheivedViewHolder) holder).timeText;
         CardView donationPostCard = ((GoalAcheivedViewHolder) holder).donationPostCard;
 
@@ -382,14 +438,70 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+
+                    // Figure out if we should use 1st or 3rd person based on logged in user.
                     User u = snapshot.getValue(User.class);
+                    String postTextContent = "You achieved your goal for " + post.charity + "!";
+                    int spanStart = 27;
+                    int spanEnd = post.charity.length() + spanStart;
 
-                    if (post.user.equals(current_user)) {
-                        postText.setText("You acheived your goal for " + post.charity + "!");
-
-                    } else {
-                        postText.setText("@" + u.username + " acheived their goal for " + post.charity + "!");
+                    if (!post.user.equals(current_user)) {
+                        postTextContent = "@" + u.username + " achieved their goal for " + post.charity + "!";
+                        spanStart = 26 + u.username.length();
+                        spanEnd = post.charity.length() + spanStart;
                     }
+
+                    // Create a clickable string where only the charity name will be clickable.
+                    SpannableString ss = new SpannableString(postTextContent);
+                    ClickableSpan clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View textView) {
+
+                            // On click of the charity name, start a new activity,
+                            // the charity profile of the charity that was clicked on
+                            Intent loadCharityIntent = new Intent(textView.getContext(), CharityProfile.class);
+                            Bundle extras = new Bundle();
+
+                            // Placeholder
+                            charityIDtoLaunch = "Error Finding Charity";
+
+                            // Need to make an asynchronous call/not launch the activity
+                            // until we get the ID of the charity to launch it
+                            getCharityID(new MyCallback() {
+                                @Override
+                                public void onCallback(String value) {
+                                    charityIDtoLaunch = value;
+
+                                    // Load the string into the intent and start the activity!
+                                    extras.putString("charityID", charityIDtoLaunch);
+                                    loadCharityIntent.putExtras(extras);
+                                    textView.getContext().startActivity(loadCharityIntent);
+                                }
+                            }, post.charity);
+
+                        }
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
+                        }
+                    };
+
+                    // Get location of where the charity name is, within the post text content. Make that clickable.
+                    ss.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                    // Set that as the text content.
+                    postTextView.setText(ss);
+                    postTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+
+
+//                    if (post.user.equals(current_user)) {
+//                        postText.setText("You acheived your goal for " + post.charity + "!");
+//
+//                    } else {
+//                        postText.setText("@" + u.username + " acheived their goal for " + post.charity + "!");
+//                    }
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
@@ -407,6 +519,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         });
     }
 
+
     private void bindMatchView(@NonNull RecyclerView.ViewHolder holder, int position) {
         Post post = posts.get(position);
 
@@ -417,12 +530,13 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         CardView donationPostCard = ((MatchViewHolder) holder).donationPostCard;
 
 
-
         FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     User u = snapshot.getValue(User.class);
+
+                    Log.d(TAG, "U: " + u.toString());
 
                     mDB.getReference("Users").child(post.matchedUser).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -432,22 +546,84 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 User m = snapshot.getValue(User.class);
                                 String mId = snapshot.getKey();
 
-                                if (post.user.equals(current_user)) {
+                                Log.d(TAG, "m: " + m.toString());
+                                Log.d(TAG, "mId: " + mId.toString());
+                                Log.d(TAG, "m.username: " + m.username);
+                                Log.d(TAG, "current_user: " + current_user.toString());
 
-                                    if (m.username.equals(u.username)) {
-                                        postText.setText("You matched your own donation to " + post.charity + "!");
-                                    } else {
-                                        postText.setText("You matched @" + m.username + "'s donation to " + post.charity + "!");
-                                    }
 
-                                } else {
+                                String textContent = "";
+                                int startSpan = 0;
+                                int endSpan = 0;
 
-                                    if (mId.equals(current_user)) {
-                                        postText.setText("@" + u.username + " matched your donation to " + post.charity + "!");
-                                    } else {
-                                        postText.setText("@" + u.username + " matched @" + m.username + "'s donation to " + post.charity + "!");
-                                    }
+                                if (post.user.equals(current_user) && m.username.equals(u.username) ) {
+                                    textContent = "You matched your own donation to " + post.charity + "!";
+                                    startSpan = 33;
+                                    endSpan = startSpan + post.charity.length();
                                 }
+
+                                else if (post.user.equals(current_user) && !m.username.equals(u.username) ) {
+                                    textContent = "You matched @" + m.username + "'s donation to " + post.charity + "!";
+                                    startSpan = 28 + m.username.length();
+                                    endSpan = startSpan + post.charity.length();
+                                }
+
+                                else if (!post.user.equals(current_user) && mId.equals(current_user)) {
+                                    textContent = "@" + u.username + " matched your donation to " + post.charity + "!";
+                                    startSpan = 27 + m.username.length();
+                                    endSpan = startSpan + post.charity.length();
+                                }
+
+                                else {
+                                    textContent = "@" + u.username + " matched @" + m.username + "'s donation to " + post.charity + "!";
+                                    startSpan = 26 + u.username.length() + m.username.length();
+                                    endSpan = startSpan + post.charity.length();
+
+                                }
+
+
+                                // Create a clickable string where only the charity name will be clickable.
+                                SpannableString ss = new SpannableString(textContent);
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View textView) {
+
+                                        // On click of the charity name, start a new activity,
+                                        // the charity profile of the charity that was clicked on
+                                        Intent loadCharityIntent = new Intent(textView.getContext(), CharityProfile.class);
+                                        Bundle extras = new Bundle();
+
+                                        // Placeholder
+                                        charityIDtoLaunch = "Error Finding Charity";
+
+                                        // Need to make an asynchronous call/not launch the activity
+                                        // until we get the ID of the charity to launch it
+                                        getCharityID(new MyCallback() {
+                                            @Override
+                                            public void onCallback(String value) {
+                                                charityIDtoLaunch = value;
+
+                                                // Load the string into the intent and start the activity!
+                                                extras.putString("charityID", charityIDtoLaunch);
+                                                loadCharityIntent.putExtras(extras);
+                                                textView.getContext().startActivity(loadCharityIntent);
+                                            }
+                                        }, post.charity);
+
+                                    }
+                                    @Override
+                                    public void updateDrawState(TextPaint ds) {
+                                        super.updateDrawState(ds);
+                                        ds.setUnderlineText(false);
+                                    }
+                                };
+
+                                // Get location of where the charity name is, within the post text content. Make that clickable.
+                                ss.setSpan(clickableSpan, startSpan, endSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                                // Set that as the text content.
+                                postText.setText(ss);
+                                postText.setMovementMethod(LinkMovementMethod.getInstance());
 
                                 LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
@@ -667,4 +843,47 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         });
     }
 
+    private void getCharityID(MyCallback myCallback, String charityName) {
+        Log.d(TAG, "Trying to find the ID for charity with name: " + charityName);
+        DatabaseReference referenceCharitiesDB = FirebaseDatabase.getInstance().getReference("Charities");
+        referenceCharitiesDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Object charityDataSnapshot = dataSnapshot.getValue(Object.class);
+                if (charityDataSnapshot != null) {
+                    HashMap<String,Object> charityDB = (HashMap<String,Object>) charityDataSnapshot;
+
+                    Iterator it = charityDB.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        Log.d(TAG, "Checking if this key-value pair is the charity chosen: " + pair.getKey().toString());
+                        HashMap<String,Object> charityInfoFromDB = (HashMap<String, Object>) pair.getValue();
+                        String charityNameFromDB = (String) charityInfoFromDB.get("name");
+
+                        if (charityNameFromDB.equals(charityName)) {
+                            Log.d(TAG, "Woohoo match found for: " + charityName);
+                            charityIDtoLaunch = pair.getKey().toString();
+                            myCallback.onCallback(charityIDtoLaunch);
+                            Log.d(TAG, "\tcharityIDtoLaunch: " + charityIDtoLaunch);
+                            break;
+                        }
+
+                        it.remove();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+
+        });
+    }
+
+}
+
+
+interface MyCallback {
+    void onCallback(String value);
 }

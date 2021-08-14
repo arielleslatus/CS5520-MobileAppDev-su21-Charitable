@@ -30,13 +30,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
@@ -150,8 +146,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         forgotPassword = (TextView) findViewById(R.id.forgotPassword);
         forgotPassword.setOnClickListener(this);
 
-        debug = (Button) findViewById(R.id.debugButton);
-        debug.setOnClickListener(this);
     }
 
     @Override
@@ -170,16 +164,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, ForgotPassword.class));
                 break;
 
-            case R.id.debugButton:
-                Log.d(TAG, "Clicked debug button");
-                Intent debugIntent = new Intent(this, CharityProfile.class);
-                Bundle extras = new Bundle();
-                extras.putString("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
-                extras.putString("charityID", "MgWVicf0bKkl4Frwt59");
-                debugIntent.putExtras(extras);
-                startActivity(debugIntent);
-
-                break;
         }
 
     }
@@ -314,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
                 } else {
-                    Toast.makeText(MainActivity.this, "Failed to login, please check your" +
+                    Toast.makeText(MainActivity.this, "Failed to login, please check your " +
                             "credentials", Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.GONE);
                 }

@@ -3,12 +3,18 @@ package edu.neu.charitable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -16,6 +22,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -25,9 +32,10 @@ import edu.neu.charitable.models.Goal;
 import edu.neu.charitable.models.Post;
 import edu.neu.charitable.models.User;
 
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class DonateDummy extends AppCompatActivity {
+public class DonateDummy extends AppCompatActivity implements SensorEventListener {
 
     private EditText editTextCharity, editTextAmount;
     private ProgressBar progressBar;
@@ -38,46 +46,80 @@ public class DonateDummy extends AppCompatActivity {
     private String userDonate;
     private boolean directToUser;
 
+    private SensorManager mSensorManager;
+    private float mAccel;
+    private float mAccelCurrent;
+    private float mAccelLast;
+    private int count;
+
+    private final SensorEventListener mSensorListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
+            float delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta;
+            if (mAccel > 12) {
+                Toast.makeText(getApplicationContext(), "Shake event detected", Toast.LENGTH_SHORT).show();
+                handleShakeEvent();
+            }
+        }
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donate_dummy);
 
-        mDB = FirebaseDatabase.getInstance();
-        editTextCharity = (EditText) findViewById(R.id.donate_charity);
-        editTextAmount = (EditText) findViewById(R.id.donate_amount);
-        progressBar = (ProgressBar) findViewById(R.id.donate_progressBar);
+        this.mDB = FirebaseDatabase.getInstance();
+        this.editTextCharity = (EditText) findViewById(R.id.donate_charity);
+        this.editTextAmount = (EditText) findViewById(R.id.donate_amount);
+        this.progressBar = (ProgressBar) findViewById(R.id.donate_progressBar);
 
         String donate_to = getIntent().getStringExtra("AUTOFILL_CHARITY");
         if (donate_to != null && !donate_to.isEmpty()) {
-            editTextCharity.setText(donate_to);
+            this.editTextCharity.setText(donate_to);
             if (donate_to.equals("Charitable Pool Direct")) {
-                isPool = true;
+                this.isPool = true;
             }
-            editTextCharity.setEnabled(false);
+            this.editTextCharity.setEnabled(false);
         }
 
         String donate_amount = getIntent().getStringExtra("AUTOFILL_AMOUNT");
         if (donate_amount != null && !donate_amount.isEmpty()) {
-            editTextAmount.setText(donate_amount);
+            this.editTextAmount.setText(donate_amount);
         }
 
         String match = getIntent().getStringExtra("MATCH");
         if (match != null) {
-            isMatch = true;
-            matchTo = match;
+            this.isMatch = true;
+            this.matchTo = match;
         } else {
-            isMatch = false;
+            this.isMatch = false;
         }
 
         String dtu = getIntent().getStringExtra("DIRECT_TO_USER");
         if (dtu != null) {
-            directToUser = true;
-            userDonate = dtu;
+            this.directToUser = true;
+            this.userDonate = dtu;
         } else {
-            directToUser = false;
+            this.directToUser = false;
         }
+
+        // Shake Sensor
+        this.mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Objects.requireNonNull(this.mSensorManager).registerListener(this.mSensorListener, this.mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        this.mAccel = 10f;
+        this.mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        this.mAccelLast = SensorManager.GRAVITY_EARTH;
     }
 
     public void back(View view) {
@@ -91,22 +133,23 @@ public class DonateDummy extends AppCompatActivity {
         try {
             amount = Float.parseFloat(editTextAmount.getText().toString());
         } catch (Exception e) {
-            editTextAmount.setError("Need Valid amount");
-            editTextAmount.requestFocus();
+            this.editTextAmount.setError("Need Valid amount");
+            this.editTextAmount.requestFocus();
             return;
         }
 
-        charity = editTextCharity.getText().toString();
+        charity = this.editTextCharity.getText().toString();
         if (charity.isEmpty()) {
-            editTextCharity.setError("Need a Charity Name");
-            editTextCharity.requestFocus();
+            this.editTextCharity.setError("Need a Charity Name");
+            this.editTextCharity.requestFocus();
         }
 
 
-        if (directToUser) {
-            progressBar.setVisibility(View.VISIBLE);
+        if (this.directToUser) {
 
-            mDB.getReference("username_venmo").child(userDonate).addListenerForSingleValueEvent(new ValueEventListener() {
+            this.progressBar.setVisibility(View.VISIBLE);
+
+            this.mDB.getReference("username_venmo").child(userDonate).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
@@ -125,77 +168,12 @@ public class DonateDummy extends AppCompatActivity {
             });
 
         } else if (charity.equals("Charitable Pool Direct")) {
-            progressBar.setVisibility(View.VISIBLE);
-
-            //get num users
-            mDB.getReference("num_pool_users").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        Integer num_in_pool = snapshot.getValue(Integer.class);
-                        if (num_in_pool != null) {
-                            int random = ThreadLocalRandom.current().nextInt(1, num_in_pool + 1);
-
-                            //get the randomly selected recipient
-                            mDB.getReference("pool").child(Integer.toString(random)).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.exists()) {
-                                        String pool_selected = snapshot.getValue(String.class);
-                                        if (pool_selected != null) {
-
-                                            //get the user's venmo id
-                                            mDB.getReference("username_venmo").child(pool_selected).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    if (snapshot.exists()) {
-                                                        String selected_venmo = snapshot.getValue(String.class);
-                                                        String username = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                                        Donation don = new Donation(charity, username, amount);
-                                                        makeDonation(don, username, charity, amount, pool_selected);
-                                                        linkToVenmoUser(don, selected_venmo);
-
-
-                                                        mDB.getReference("pool_received").child(pool_selected).push().setValue(don);
-
-                                                    } else {
-                                                        progressBar.setVisibility(View.GONE);
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                                }
-                                            });
-                                        } else {
-                                            progressBar.setVisibility(View.GONE);
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
-
-                        } else {
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+            charitablePoolDirect(charity, amount);
         } else {
-            progressBar.setVisibility(View.VISIBLE);
+            this.progressBar.setVisibility(View.VISIBLE);
 
             //check if charity exists
-            mDB.getReference("Charities").orderByChild("name").equalTo(charity)
+            this.mDB.getReference("Charities").orderByChild("name").equalTo(charity)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -228,7 +206,7 @@ public class DonateDummy extends AppCompatActivity {
 
     private void makeDonation(Donation don, String username, String charity, float amount, String pool_user) {
         //Toast.makeText(DonateDummy.this, "making donation", Toast.LENGTH_LONG).show();
-        mDB.getReference().child("user_donations").child(username).push().setValue(don).addOnCompleteListener(new OnCompleteListener<Void>() {
+        this.mDB.getReference().child("user_donations").child(username).push().setValue(don).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
@@ -258,7 +236,7 @@ public class DonateDummy extends AppCompatActivity {
     }
 
     private void updatePosts(Post post, String username) {
-        mDB.getReference().child("user_posts").child(username).push().setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+        this.mDB.getReference().child("user_posts").child(username).push().setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
@@ -271,7 +249,7 @@ public class DonateDummy extends AppCompatActivity {
     }
 
     private void updateGoal(Donation don, String username, String chrName) {
-        mDB.getReference("user_goal").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+        this.mDB.getReference("user_goal").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -329,7 +307,7 @@ public class DonateDummy extends AppCompatActivity {
     //if charity has a venmo, and user has venmo installed,
     private void linkToVenmo(Donation don, String charId) {
         //Toast.makeText(DonateDummy.this, charId, Toast.LENGTH_LONG).show();
-        mDB.getReference("charity_venmo").child(charId).addListenerForSingleValueEvent(new ValueEventListener() {
+        this.mDB.getReference("charity_venmo").child(charId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String venmoId = "";
@@ -360,7 +338,7 @@ public class DonateDummy extends AppCompatActivity {
 
     //For pool donation
     private void linkToVenmoUser(Donation don, String venmoId) {
-        mDB.getReference("Users").child(don.user).addListenerForSingleValueEvent(new ValueEventListener() {
+        this.mDB.getReference("Users").child(don.user).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -387,7 +365,7 @@ public class DonateDummy extends AppCompatActivity {
     }
 
     private void linkToVenmoDirect(Donation don, String venmoId) {
-        mDB.getReference("Users").child(don.user).addListenerForSingleValueEvent(new ValueEventListener() {
+        this.mDB.getReference("Users").child(don.user).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -403,6 +381,220 @@ public class DonateDummy extends AppCompatActivity {
                     String url = "https://venmo.com/" + venmoId + "?txn=pay&note=" + note + "&amount=" + don.amount;
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(browserIntent);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
+
+    public void handleShakeEvent() {
+        startActivity(new Intent(this, Home.class));
+        this.mDB.getReference("Charities").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    long num_charities = snapshot.getChildrenCount();
+                    if (num_charities > 0) {
+                        int random = ThreadLocalRandom.current().nextInt(1, (int) (num_charities + 1));
+                        mDB.getReference("pool_charity").child(Integer.toString(random)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    String charity_selected = snapshot.getValue(String.class);
+                                    if (charity_selected != null) {
+                                        mDB.getReference("Charities/" + charity_selected).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if (snapshot.exists()) {
+                                                    String charityName = snapshot.getValue(String.class);
+                                                    Intent intent = new Intent(findViewById(R.id.donateDummyView).getContext(), DonateDummy.class);
+                                                    intent.putExtra("AUTOFILL_CHARITY", charityName);
+                                                    findViewById(R.id.donateDummyView).getContext().startActivity(intent);
+                                                }
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                            }
+                                        });
+                                    } else {
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        this.mSensorManager.registerListener(this.mSensorListener, this.mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        super.onResume();
+    }
+    @Override
+    protected void onPause() {
+        this.mSensorManager.unregisterListener(this.mSensorListener);
+        super.onPause();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    private void randomCharity(String charity) {
+    //get num users
+        this.mDB.getReference("Charities").addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            if (snapshot.exists()) {
+                long num_charities = snapshot.getChildrenCount();
+                System.out.println("num charities: " + num_charities);
+                if (num_charities > 0) {
+                    int random = ThreadLocalRandom.current().nextInt(1, (int) (num_charities + 1));
+                    System.out.println("random number: " + random);
+                    //get the randomly selected recipient
+                    mDB.getReference("pool_charity").child(Integer.toString(random)).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                String charity_selected = snapshot.getValue(String.class);
+                                System.out.println("charity selected: " + charity_selected);
+                                if (charity_selected != null) {
+                                    mDB.getReference("Charities/" + charity_selected).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.exists()) {
+                                                String charityName = snapshot.getValue(String.class);
+                                                System.out.println("charity name: " + charityName);
+                                                EditText charityNameEditText = findViewById(R.id.donate_charity);
+                                                charityNameEditText.setText(charityName);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+
+
+
+                                } else {
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            } else {
+                                System.out.println("snapshot does not exist");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    });
+}
+
+    private void charitablePoolDirect(String charity, float amount) {
+        this.progressBar.setVisibility(View.VISIBLE);
+
+        //get num users
+        this.mDB.getReference("num_pool_users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Integer num_in_pool = snapshot.getValue(Integer.class);
+                    if (num_in_pool != null) {
+                        int random = ThreadLocalRandom.current().nextInt(1, num_in_pool + 1);
+
+                        //get the randomly selected recipient
+                        mDB.getReference("pool").child(Integer.toString(random)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    String pool_selected = snapshot.getValue(String.class);
+                                    if (pool_selected != null) {
+
+                                        //get the user's venmo id
+                                        mDB.getReference("username_venmo").child(pool_selected).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if (snapshot.exists()) {
+                                                    String selected_venmo = snapshot.getValue(String.class);
+                                                    String username = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                                    Donation don = new Donation(charity, username, amount);
+                                                    makeDonation(don, username, charity, amount, pool_selected);
+                                                    linkToVenmoUser(don, selected_venmo);
+
+
+                                                    mDB.getReference("pool_received").child(pool_selected).push().setValue(don);
+
+                                                } else {
+                                                    progressBar.setVisibility(View.GONE);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
+                                    } else {
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                    }
                 }
             }
 
