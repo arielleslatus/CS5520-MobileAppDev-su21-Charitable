@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -291,6 +292,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                     String postTextContent = userText + " donated to " + post.charity + "!";
 
+                    shareOnClickListener(buttonShare, postTextContent);
+
                     // Create a clickable string where only the charity name will be clickable.
                     SpannableString ss = new SpannableString(postTextContent);
                     ClickableSpan clickableSpan = new ClickableSpan() {
@@ -335,17 +338,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                     // Set that as the text content.
                     postTextView.setText(ss);
                     postTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
-
-
-
-
-
-
-
-
-
-
 
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
@@ -394,10 +386,14 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 User to = snapshot.getValue(User.class);
 
                                 if (post.user.equals(current_user)) {
-                                    postText.setText("You donated directly to @" + to.username + "!");
+                                    String body = "You donated directly to @" + to.username + "!";
+                                    postText.setText(body);
+                                    shareOnClickListener(buttonShare, body);
 
                                 } else {
-                                    postText.setText("@" + u.username + " donated directly to " + to.username + "!");
+                                    String body = "@" + u.username + " donated directly to " + to.username + "!";
+                                    postText.setText(body);
+                                    shareOnClickListener(buttonShare, body);
                                 }
 
                                 LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
@@ -450,6 +446,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                         spanStart = 26 + u.username.length();
                         spanEnd = post.charity.length() + spanStart;
                     }
+
+                    shareOnClickListener(buttonShare, postTextContent);
 
                     // Create a clickable string where only the charity name will be clickable.
                     SpannableString ss = new SpannableString(postTextContent);
@@ -581,6 +579,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                                 }
 
+                                shareOnClickListener(buttonShare, textContent);
+
 
                                 // Create a clickable string where only the charity name will be clickable.
                                 SpannableString ss = new SpannableString(textContent);
@@ -674,17 +674,24 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 if (post.user.equals(current_user)) {
 
                                     if (u.username.equals(to.username)) {
-                                        postText.setText("You matched your own gift to our pool!");
+                                        String body = "You matched your own gift to our pool!";
+                                        postText.setText(body);
+                                        shareOnClickListener(buttonShare, body);
                                     } else {
-                                        postText.setText("You matched @" + to.username + "'s gift to our pool!");
+                                        String body = "You matched @" + to.username + "'s gift to our pool!";
+                                        postText.setText(body);
+                                        shareOnClickListener(buttonShare, body);
                                     }
 
                                 } else {
 
                                     if (toId.equals(current_user)) {
-                                        postText.setText("@" + u.username +  " matched your gift to our pool!");
+                                        String body = "@" + u.username +  " matched your gift to our pool!";
+                                        postText.setText(body);
+                                        shareOnClickListener(buttonShare, body);
                                     } else {
-                                        postText.setText("@" + u.username +  " matched @" + to.username + "'s gift to our pool!");
+                                        String body = "@" + u.username +  " matched @" + to.username + "'s gift to our pool!";
+                                        postText.setText(body);
                                     }
                                 }
 
@@ -738,9 +745,11 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 String toId = snapshot.getKey();
 
                                     if (toId.equals(current_user)) {
-                                        postText.setText("@" + u.username +  " thanked you for your gift!");
+                                        String body = "@" + u.username +  " thanked you for your gift!";
+                                        postText.setText(body);
                                     } else {
-                                        postText.setText("@" + u.username +  " thanked @" + to.username + " for their gift!");
+                                        String body = "@" + u.username +  " thanked @" + to.username + " for their gift!";
+                                        postText.setText(body);
                                     }
 
 
@@ -839,6 +848,19 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                 intent.putExtra("AUTOFILL_AMOUNT", Float.toString(post.amount));
                 intent.putExtra("MATCH", post.user);
                 v.getContext().startActivity(intent);
+            }
+        });
+    }
+
+    private void shareOnClickListener(Button buttonShare, String text) {
+        buttonShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                //sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+                intent.putExtra(android.content.Intent.EXTRA_TEXT, text);
+                v.getContext().startActivity(Intent.createChooser(intent, "Share via"));
             }
         });
     }
