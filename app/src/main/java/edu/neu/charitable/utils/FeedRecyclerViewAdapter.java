@@ -856,12 +856,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
                     Iterator it = charityDB.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();
-                        Log.d(TAG, "Checking if this key-value pair is the charity chosen: " + pair.getKey().toString());
+//                        Log.d(TAG, "Checking if this key-value pair is the charity chosen: " + pair.getKey().toString());
                         HashMap<String,Object> charityInfoFromDB = (HashMap<String, Object>) pair.getValue();
                         String charityNameFromDB = (String) charityInfoFromDB.get("name");
 
                         if (charityNameFromDB.equals(charityName)) {
-                            Log.d(TAG, "Woohoo match found for: " + charityName);
+                            Log.d(TAG, "Found the name for the charity ID selected: " + charityName);
                             charityIDtoLaunch = pair.getKey().toString();
                             myCallback.onCallback(charityIDtoLaunch);
                             Log.d(TAG, "\tcharityIDtoLaunch: " + charityIDtoLaunch);

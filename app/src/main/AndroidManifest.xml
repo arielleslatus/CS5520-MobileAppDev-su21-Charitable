@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="true" />
@@ -42,7 +43,6 @@
         <activity android:name=".UpDateProfile" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".RegisterUser" />
-        <activity android:name=".DonationActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,11 +61,6 @@
                 <data
                     android:host="example.com"
                     android:scheme="https" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".Homepage">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".CharityProfile">
