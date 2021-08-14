@@ -247,7 +247,7 @@ public class RegisterForPool extends AppCompatActivity implements View.OnClickLi
                                                                                         mDb.getReference("pool").child(Integer.toString(num_users + 1)).setValue(mAuth.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                             @Override
                                                                                             public void onSuccess(@NonNull Void unused) {
-                                                                                                mDb.getReference("num_pool_users").child(Integer.toString(num_users + 1)).setValue(user);
+                                                                                                mDb.getReference("num_pool_users").setValue(Integer.toString(num_users + 1));
                                                                                                 Toast.makeText(RegisterForPool.this, "added to pool", Toast.LENGTH_LONG).show();
                                                                                             }
                                                                                         });
