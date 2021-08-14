@@ -109,8 +109,6 @@ public class CharityProfile extends AppCompatActivity {
                 Object charityDataSnapshot = dataSnapshot.getValue(Object.class);
                 if (charityDataSnapshot != null) {
 
-                    Log.d(TAG, "snapshot: " + charityDataSnapshot.toString().substring(0,300));
-
                     // Examine snapshot & retrieve this charity's info via the ID
                     HashMap<String,Object> charityDB = (HashMap<String,Object>) charityDataSnapshot;
                     HashMap<String,String> curCharity = (HashMap<String,String>) charityDB.get(charityID);
@@ -183,7 +181,7 @@ public class CharityProfile extends AppCompatActivity {
                     // For each user in the user_donation database,
                     for(String userID : donationsDataSnapshotHashMap.keySet() ) {
 
-                        Log.d(TAG, "Looking at transactions of user ID: " + userID);
+//                        Log.d(TAG, "Looking at transactions of user ID: " + userID);
 
                         // For each donation they've ever given,
                         HashMap<String, Object> userDonations = (HashMap<String, Object>) donationsDataSnapshotHashMap.get(userID);
@@ -192,24 +190,41 @@ public class CharityProfile extends AppCompatActivity {
                             // If the charity ID matches this charity's ID, make a post
                             HashMap<String, Object> donation = (HashMap<String, Object>) userDonations.get(donationID);
                             String userWhoDonated = (String) donation.get("user");
+
                             if (donation.get("charity").equals(charityName) ) {
 
+                                Log.d(TAG, "Donation found for  " + charityName);
 
                                 // Need to find the user of the username who donated
                                 referenceUsersDB.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshotUsers) {
                                         Object userDataSnapshot = dataSnapshotUsers.getValue(Object.class);
+
+
                                         if (userDataSnapshot != null) {
 
                                             // Examine snapshot & retrieve this user's username via the ID
                                             HashMap<String, Object> userDB = (HashMap<String, Object>) userDataSnapshot;
-                                            HashMap<String, String> curUser = (HashMap<String, String>) userDB.get(userWhoDonated);
-                                            String userWhoDonatedUsername = curUser.get("username");
-                                            Log.d(TAG, "User who donated: " + userWhoDonatedUsername);
+
+
+                                            String userWhoDonatedUsername;
+                                            try {
+                                                HashMap<String, String> curUser = (HashMap<String, String>) userDB.get(userWhoDonated);
+//                                            Log.d(TAG, "Looking at Users database .... curUser " + curUser.toString());
+//                                            Log.d(TAG, "Looking at Users database .... hoping to get their username " + curUser.toString());
+
+                                                userWhoDonatedUsername = curUser.get("username");
+                                                Log.d(TAG, "User who donated: " + userWhoDonatedUsername);
+                                            }
+                                            catch (NullPointerException e) {
+                                                userWhoDonatedUsername = "Unknown";
+                                                Log.d(TAG, "Does this donation not have a username? " +
+                                                        "" + donation.toString());
+                                            }
 
                                             Post newPost = new Post("donation", userWhoDonatedUsername, charityName,
-                                                    null, 5, "woo text post", 0);
+                                                    null, 5, "", 0);
                                             posts.add(newPost);
                                             charityAdapter.notifyItemInserted(posts.size() - 1);
 
