@@ -19,8 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.util.Pools;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,6 +57,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     private final int VIEW_TYPE_THANK_YOU = 6;
 
     public List<Post> posts;
+    private FirebaseDatabase mDB;
     private String current_user;
 
     private String charityIDtoLaunch;
@@ -67,6 +66,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public FeedRecyclerViewAdapter(List<Post> posts) {
         this.posts = posts;
+        mDB = FirebaseDatabase.getInstance();
         current_user = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
