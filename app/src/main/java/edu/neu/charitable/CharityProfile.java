@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -42,6 +43,7 @@ public class CharityProfile extends AppCompatActivity {
     // Firebase references to retrieve data about the charity, and donations to it
     private DatabaseReference referenceCharitiesDB;
     private DatabaseReference referenceDonationsDB;
+    private DatabaseReference referenceUsersDB;
 
     String TAG = "CharityProfile DebugAlice ";
 
@@ -49,7 +51,6 @@ public class CharityProfile extends AppCompatActivity {
 
     RecyclerView recyclerView;
     CharityProfileRecyclerViewAdapter charityAdapter;
-
 
 
     @Override
@@ -60,15 +61,12 @@ public class CharityProfile extends AppCompatActivity {
         // Get values for the main data - who is viewing this charity,
         // and what charity are they viewing?
         uidLoggedIn = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-//        // TODO remove after debugging
-//        uidLoggedIn = "0wblLOmpYhcVKZJvcpRS1VjwlKy2";
-
         charityID = getIntent().getExtras().getString("charityID");
 
         // Get the path from firebase.
         this.referenceCharitiesDB = FirebaseDatabase.getInstance().getReference("Charities");
         this.referenceDonationsDB = FirebaseDatabase.getInstance().getReference("user_donations");
+        this.referenceUsersDB = FirebaseDatabase.getInstance().getReference("Users");
 
 
         // Get info about charity then populate the layout
@@ -77,16 +75,16 @@ public class CharityProfile extends AppCompatActivity {
         // Find the ID for our recyclerview
         recyclerView = findViewById(R.id.charityProfileRecyclerView);
 
-        // Load relevant transactions
-        posts = new ArrayList<>();
-
         // Initialize the content of the feed
+        posts = new ArrayList<>();
         charityAdapter = new CharityProfileRecyclerViewAdapter(posts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(charityAdapter);
 
-
+        Log.d(TAG, "Ok, we initialized recyclerview. About to load transactions.");
         loadTransactions();
+        Log.d(TAG, "Done loading transactions.");
+
 
 
     }
@@ -95,20 +93,9 @@ public class CharityProfile extends AppCompatActivity {
 
         switch (v.getId()) {
             case R.id.donateButton:
-                Intent donationActivity = new Intent(this, DonationActivity.class);
-                Bundle extras = new Bundle();
-                extras.putString("CHARITY_NAME", charityName);
-                extras.putString("uid", uidLoggedIn);
-                donationActivity.putExtras(extras);
-                startActivity(donationActivity);
-                break;
-
-//            case R.id.__:
-//                ...
-//                break;
-//
-
-
+                Intent intent = new Intent(v.getContext(), DonateDummy.class);
+                intent.putExtra("AUTOFILL_CHARITY", charityName);
+                v.getContext().startActivity(intent);
         }
     }
 
@@ -118,20 +105,14 @@ public class CharityProfile extends AppCompatActivity {
         this.referenceCharitiesDB.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "OnDataChange invoked.... for referenceCharitiesDB");
+                Log.d(TAG, "Retrieving Charity Data to Populate CharityProfile for: " + charityID);
                 Object charityDataSnapshot = dataSnapshot.getValue(Object.class);
                 if (charityDataSnapshot != null) {
 
-                    Log.d(TAG, "charityDataSnapshot: " + charityDataSnapshot.toString()
-                            .substring(0,300));
+                    Log.d(TAG, "snapshot: " + charityDataSnapshot.toString().substring(0,300));
 
+                    // Examine snapshot & retrieve this charity's info via the ID
                     HashMap<String,Object> charityDB = (HashMap<String,Object>) charityDataSnapshot;
-                    Log.d(TAG, "charityDB: " + charityDB.toString().substring(0,300));
-                    Log.d(TAG, "charityDB.type: " + charityDB.getClass());
-                    Log.d(TAG, "charityDB.length: " + charityDB.size());
-                    Log.d(TAG, "Looking for charity ID: " + charityID);
-                    Log.d(TAG, "charityDB.keys: " + charityDB.keySet().toString());
-
                     HashMap<String,String> curCharity = (HashMap<String,String>) charityDB.get(charityID);
 
                     charityName = curCharity.get("name");
@@ -139,7 +120,7 @@ public class CharityProfile extends AppCompatActivity {
                             + curCharity.get("country");
                     charityMission = curCharity.get("mission");
                     charityMission = charityMission.replace(".MISSION STATEMENT:",
-                            "");
+                            "").replace("\n", " ");
 
                     if (charityMission.length() > 275) {
                         charityMission = charityMission.substring(0, 275) + "...";
@@ -147,7 +128,6 @@ public class CharityProfile extends AppCompatActivity {
 
 
                     logoId = R.drawable.aspca_logo;
-
                     updateViews();
 
                 }
@@ -190,17 +170,15 @@ public class CharityProfile extends AppCompatActivity {
     // Once a donation to this charity is found add it to ArrayList of Posts to update RecyclerView.
     private void loadTransactions(){
 
-        Log.d(TAG, "Getting transactions....");
+        Log.d(TAG, "Getting transactions to this charity: " + charityID);
 
         this.referenceDonationsDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "referenceDonationsDB OnDataChange invoked....");
                 Object donationsDataSnapshot = dataSnapshot.getValue(Object.class);
                 if (donationsDataSnapshot != null) {
 
                     HashMap<String,Object> donationsDataSnapshotHashMap = (HashMap<String,Object>) donationsDataSnapshot;
-                    Log.d(TAG, "donationsDataSnapshotHashMap: " + donationsDataSnapshotHashMap.toString());
 
                     // For each user in the user_donation database,
                     for(String userID : donationsDataSnapshotHashMap.keySet() ) {
@@ -213,16 +191,39 @@ public class CharityProfile extends AppCompatActivity {
 
                             // If the charity ID matches this charity's ID, make a post
                             HashMap<String, Object> donation = (HashMap<String, Object>) userDonations.get(donationID);
-
+                            String userWhoDonated = (String) donation.get("user");
                             if (donation.get("charity").equals(charityName) ) {
-                                Post newPost = new Post("donation", uidLoggedIn, charityName,
-                                        null, 5, "woo text post", 0);
-                                posts.add(newPost);
-//                                Log.d(TAG, "Added " + donationID + " to posts, of type " + newPost.type + "." +
-//                                        "Size is now: " + posts.size());
 
-                                // Trying both.....
-                                charityAdapter.notifyItemInserted(posts.size() - 1);
+
+                                // Need to find the user of the username who donated
+                                referenceUsersDB.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshotUsers) {
+                                        Object userDataSnapshot = dataSnapshotUsers.getValue(Object.class);
+                                        if (userDataSnapshot != null) {
+
+                                            // Examine snapshot & retrieve this user's username via the ID
+                                            HashMap<String, Object> userDB = (HashMap<String, Object>) userDataSnapshot;
+                                            HashMap<String, String> curUser = (HashMap<String, String>) userDB.get(userWhoDonated);
+                                            String userWhoDonatedUsername = curUser.get("username");
+                                            Log.d(TAG, "User who donated: " + userWhoDonatedUsername);
+
+                                            Post newPost = new Post("donation", userWhoDonatedUsername, charityName,
+                                                    null, 5, "woo text post", 0);
+                                            posts.add(newPost);
+                                            charityAdapter.notifyItemInserted(posts.size() - 1);
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
+
+
                             }
 
 

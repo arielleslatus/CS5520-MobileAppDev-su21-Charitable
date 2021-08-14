@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -25,26 +24,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import edu.neu.charitable.models.Charity;
-import edu.neu.charitable.models.CharityString;
-import edu.neu.charitable.models.User;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -121,8 +106,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         forgotPassword = (TextView) findViewById(R.id.forgotPassword);
         forgotPassword.setOnClickListener(this);
 
-        debug = (Button) findViewById(R.id.debugButton);
-        debug.setOnClickListener(this);
     }
 
     @Override
@@ -141,16 +124,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, ForgotPassword.class));
                 break;
 
-            case R.id.debugButton:
-                Log.d(TAG, "Clicked debug button");
-                Intent debugIntent = new Intent(this, CharityProfile.class);
-                Bundle extras = new Bundle();
-                extras.putString("uid", "AoIjpYofuxVFzgL1JpcwOx7P7hv2");
-                extras.putString("charityID", "-MgX2CS00W9ZohtGmLE-");
-                debugIntent.putExtras(extras);
-                startActivity(debugIntent);
-
-                break;
         }
 
     }

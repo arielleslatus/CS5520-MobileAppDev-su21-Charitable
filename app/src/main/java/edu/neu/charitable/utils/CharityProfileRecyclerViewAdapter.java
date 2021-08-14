@@ -3,12 +3,6 @@ package edu.neu.charitable.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,20 +20,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
-import edu.neu.charitable.CharityProfile;
 import edu.neu.charitable.DonateDummy;
 import edu.neu.charitable.Home;
 import edu.neu.charitable.R;
@@ -63,7 +52,6 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder invoked at with viewType: " + viewType);
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_donation, parent, false);
         return new DonationViewHolder(view);
     }
@@ -75,7 +63,6 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
         if (holder instanceof DonationViewHolder) {
 
             if (posts.size() != 0){
-                Log.v(TAG, "Binding ViewHolder at position: " + position);
                 bindDonationView(holder, position);
             }
 
@@ -90,7 +77,6 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
 
     @Override
     public int getItemViewType(int position) {
-        Log.d(TAG, "DebugAlice Getting itemViewType at position " + position);
         return VIEW_TYPE_DONATION;
     }
 
@@ -104,7 +90,7 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
                         .child(post.user)
                         .orderByChild("timestamp")
                         .equalTo(post.timestamp)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                        .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
@@ -148,6 +134,7 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
 
     private void bindDonationView(@NonNull RecyclerView.ViewHolder holder, int position) {
         Post post = posts.get(position);
+        Log.d(TAG, "Making donation post: " + post.toString());
 
         Button buttonMatch = ((DonationViewHolder) holder).buttonMatch;
         Button buttonShare = ((DonationViewHolder) holder).buttonShare;
@@ -157,62 +144,73 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
         CardView donationPostCard = ((DonationViewHolder) holder).donationPostCard;
 
 
-        //Get user and fill in information this set listeners for the buttons
-        FirebaseDatabase.getInstance().getReference("Users").child(post.user).addListenerForSingleValueEvent(new ValueEventListener() {
+        // Get currently logged in user from db, and fill in information in the post's Views.
+        FirebaseDatabase.getInstance().getReference("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                Log.d(TAG, "onDataChange in getReference(\"Users\")");
+
                 if (snapshot.exists()) {
+                    Log.d(TAG, "Users Snapshot does exist");
 
                     // Figure out if we should use 1st or 3rd person based on logged in user.
-                    User u = snapshot.getValue(User.class);
                     String userText = "You";
+                    User u = snapshot.getValue(User.class);
                     if (!post.user.equals(current_user)) {
-                        userText = "@" + u.username;
+                        Log.d(TAG, "Use 3rd person.");
+                        String postUsername = post.user;
+                        userText = "@" + postUsername;
                     }
 
+                    Log.d(TAG, "... userText:" + userText);
                     String postTextContent = userText + " donated to " + post.charity + "!";
+                    Log.d(TAG, "... postTextContent:" + postTextContent);
 
-                    // Create a clickable string where only the charity name will be clickable.
-                    SpannableString ss = new SpannableString(postTextContent);
-                    ClickableSpan clickableSpan = new ClickableSpan() {
-                        @Override
-                        public void onClick(View textView) {
 
-                            // On click of the charity name, start a new activity,
-                            // the charity profile of the charity that was clicked on
-                            Intent loadCharityIntent = new Intent(textView.getContext(), CharityProfile.class);
-                            Bundle extras = new Bundle();
-
-                            // Need to make an asynchronous call/not launch the activity
-                            // until we get the ID of the charity to launch it
-                            getCharityID(new MyCallback() {
-                                @Override
-                                public void onCallback(String value) {
-                                    String charityIDtoLaunch = value;
-
-                                    // Load the string into the intent and start the activity!
-                                    extras.putString("charityID", charityIDtoLaunch);
-                                    loadCharityIntent.putExtras(extras);
-                                    textView.getContext().startActivity(loadCharityIntent);
-                                }
-                            }, post.charity);
-
-                        }
-                        @Override
-                        public void updateDrawState(TextPaint ds) {
-                            super.updateDrawState(ds);
-                            ds.setUnderlineText(false);
-                        }
-                    };
-
-                    // Get location of where the charity name is, within the post text content. Make that clickable.
-                    int spanStart = userText.length() + 12;
-                    int spanEnd = post.charity.length() + spanStart;
-                    ss.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    // Create a clickable string where only the charity name will be clickable.
+//                    SpannableString ss = new SpannableString(postTextContent);
+//                    ClickableSpan clickableSpan = new ClickableSpan() {
+//                        @Override
+//                        public void onClick(View textView) {
+//
+//                            // On click of the charity name, start a new activity,
+//                            // the charity profile of the charity that was clicked on
+//                            Intent loadCharityIntent = new Intent(textView.getContext(), CharityProfile.class);
+//                            Bundle extras = new Bundle();
+//
+//                            // Need to make an asynchronous call/not launch the activity
+//                            // until we get the ID of the charity to launch it
+//                            getCharityID(new MyCallback() {
+//                                @Override
+//                                public void onCallback(String value) {
+//                                    String charityIDtoLaunch = value;
+//
+//                                    // Load the string into the intent and start the activity!
+//                                    extras.putString("charityID", charityIDtoLaunch);
+//                                    loadCharityIntent.putExtras(extras);
+//                                    textView.getContext().startActivity(loadCharityIntent);
+//                                }
+//                            }, post.charity);
+//
+//                        }
+//                        @Override
+//                        public void updateDrawState(TextPaint ds) {
+//                            super.updateDrawState(ds);
+//                            ds.setUnderlineText(false);
+//                        }
+//                    };
+//
+//                    // Get location of where the charity name is, within the post text content. Make that clickable.
+//                    int spanStart = userText.length() + 12;
+//                    int spanEnd = post.charity.length() + spanStart;
+//                    ss.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                     // Set that as the text content.
-                    postTextView.setText(ss);
-                    postTextView.setMovementMethod(LinkMovementMethod.getInstance());
+//                    postTextView.setText(ss);
+//                    postTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+                    postTextView.setText(postTextContent);
 
                     LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(post.timestamp), TimeZone.getDefault().toZoneId());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ' ' MM.dd");
@@ -220,6 +218,10 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
 
                     applaudListener(holder, buttonApplaud, post);
                     matchOnClickListener(holder, buttonMatch, post);
+                }
+
+                else {
+                    Log.d(TAG, "Users Snapshot does not exist");
                 }
             }
             @Override
@@ -230,43 +232,43 @@ public class CharityProfileRecyclerViewAdapter extends RecyclerView.Adapter<Recy
     }
 
 
-    private void getCharityID(MyCallback myCallback, String charityName) {
-        Log.d(TAG, "Trying to find the ID for charity with name: " + charityName);
-        DatabaseReference referenceCharitiesDB = FirebaseDatabase.getInstance().getReference("Charities");
-        referenceCharitiesDB.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Object charityDataSnapshot = dataSnapshot.getValue(Object.class);
-                if (charityDataSnapshot != null) {
-                    HashMap<String,Object> charityDB = (HashMap<String,Object>) charityDataSnapshot;
-
-                    Iterator it = charityDB.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry pair = (Map.Entry)it.next();
-                        Log.d(TAG, "Checking if this key-value pair is the charity chosen: " + pair.getKey().toString());
-                        String charityIDFromDB = pair.getKey().toString();
-                        HashMap<String,Object> charityInfoFromDB = (HashMap<String, Object>) pair.getValue();
-                        String charityNameFromDB = (String) charityInfoFromDB.get("name");
-
-                        if (charityNameFromDB.equals(charityName)) {
-                            Log.d(TAG, "Woohoo match found for: " + charityName);
-                            String charityIDtoLaunch = pair.getKey().toString();
-                            myCallback.onCallback(charityIDtoLaunch);
-                            Log.d(TAG, "\tcharityIDtoLaunch: " + charityIDtoLaunch);
-                            break;
-                        }
-
-                        it.remove();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-
-        });
-    }
+//    private void getCharityID(MyCallback myCallback, String charityName) {
+//        Log.d(TAG, "Trying to find the ID for charity with name: " + charityName);
+//        DatabaseReference referenceCharitiesDB = FirebaseDatabase.getInstance().getReference("Charities");
+//        referenceCharitiesDB.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Object charityDataSnapshot = dataSnapshot.getValue(Object.class);
+//                if (charityDataSnapshot != null) {
+//                    HashMap<String,Object> charityDB = (HashMap<String,Object>) charityDataSnapshot;
+//
+//                    Iterator it = charityDB.entrySet().iterator();
+//                    while (it.hasNext()) {
+//                        Map.Entry pair = (Map.Entry)it.next();
+//                        Log.d(TAG, "Checking if this key-value pair is the charity chosen: " + pair.getKey().toString());
+//                        String charityIDFromDB = pair.getKey().toString();
+//                        HashMap<String,Object> charityInfoFromDB = (HashMap<String, Object>) pair.getValue();
+//                        String charityNameFromDB = (String) charityInfoFromDB.get("name");
+//
+//                        if (charityNameFromDB.equals(charityName)) {
+//                            Log.d(TAG, "Charity has been found in DB: " + charityName);
+//                            String charityIDtoLaunch = pair.getKey().toString();
+//                            myCallback.onCallback(charityIDtoLaunch);
+//                            Log.d(TAG, "\tcharityIDtoLaunch: " + charityIDtoLaunch);
+//                            break;
+//                        }
+//
+//                        it.remove();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                System.out.println("The read failed: " + databaseError.getCode());
+//            }
+//
+//        });
+//    }
 
 }
