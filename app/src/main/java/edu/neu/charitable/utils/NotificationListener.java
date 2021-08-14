@@ -2,8 +2,8 @@ package edu.neu.charitable.utils;
 
 import android.app.IntentService;
 import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +22,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import edu.neu.charitable.FireBaseBackgroundService;
 import edu.neu.charitable.Home;
 import edu.neu.charitable.R;
 import edu.neu.charitable.models.Donation;
