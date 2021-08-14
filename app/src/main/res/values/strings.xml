@@ -13,6 +13,7 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="charityLogoDescription">Charity Logo</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
@@ -22,4 +23,12 @@
     <string name="exhaust">~</string>
     <string name="_10">10</string>
     <string name="_5">5</string>
+
+    <string name="donation_card_filler_text">A donation was made. How charitable!</string>
+    <string name="matchButtonText">MATCH</string>
+    <string name="shareButtonText">SHARE</string>
+    <string name="applaudButtonText">APPLAUD</string>
+
+
+
 </resources>

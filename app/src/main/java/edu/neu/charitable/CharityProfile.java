@@ -3,6 +3,8 @@ package edu.neu.charitable;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +25,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,12 +43,16 @@ public class CharityProfile extends AppCompatActivity {
     String charityMission;
     String uidLoggedIn;
     String charityID;
-    int logoId;
+    String charityLogoURL;
+    Drawable drawableCharityLogo;
+    Bitmap logoBitmap;
+//    int logoId;
 
     // Firebase references to retrieve data about the charity, and donations to it
     private DatabaseReference referenceCharitiesDB;
     private DatabaseReference referenceDonationsDB;
     private DatabaseReference referenceUsersDB;
+    private DatabaseReference referenceCharityImg;
 
     String TAG = "CharityProfile DebugAlice ";
 
@@ -85,8 +94,6 @@ public class CharityProfile extends AppCompatActivity {
         loadTransactions();
         Log.d(TAG, "Done loading transactions.");
 
-
-
     }
 
     public void onButtonClick(View v) {
@@ -120,12 +127,18 @@ public class CharityProfile extends AppCompatActivity {
                     charityMission = charityMission.replace(".MISSION STATEMENT:",
                             "").replace("\n", " ");
 
+                    charityLogoURL = curCharity.get("logoUrl");
+                    Log.d(TAG, "Found this charityLogoURL: " + charityLogoURL);
+
+                    new DownloadsImage().execute(charityLogoURL);
+
+
+
                     if (charityMission.length() > 275) {
                         charityMission = charityMission.substring(0, 275) + "...";
                     }
 
 
-                    logoId = R.drawable.aspca_logo;
                     updateViews();
 
                 }
@@ -138,8 +151,8 @@ public class CharityProfile extends AppCompatActivity {
         });
 
 
-
     }
+
 
 
     // Populates text views after getting info about the charity from Firebase.
@@ -152,13 +165,6 @@ public class CharityProfile extends AppCompatActivity {
 
         TextView charityMissionTextView = findViewById(R.id.charityMission);
         charityMissionTextView.setText(charityMission);
-
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), logoId);
-        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory
-                .create(getResources(), bitmap);
-        roundedBitmapDrawable.setCircular(true);
-        imageView.setImageDrawable(roundedBitmapDrawable);
 
     }
 
@@ -263,6 +269,41 @@ public class CharityProfile extends AppCompatActivity {
     }
 
 
+    class DownloadsImage extends AsyncTask<String, Void,Void>{
 
+        @Override
+        protected Void doInBackground(String... strings) {
+            URL inputAsyncUrl = null;
+            try {
+                Log.d(TAG, "Input to Async function: " + strings[0]);
+                inputAsyncUrl = new URL(strings[0]);
+            } catch (MalformedURLException e) {
+                Log.d(TAG, "Error (Malformed URL), " + e.toString());
+            }
+            Bitmap bm = null;
+            try {
+                Log.d(TAG, "Creating BM Factory from " + inputAsyncUrl.toString());
+                logoBitmap = BitmapFactory.decodeStream(inputAsyncUrl.openConnection().getInputStream());
+
+            } catch (IOException e) {
+                Log.d(TAG, "Error (IOException), " + e.toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+
+            Log.d(TAG, "Creating a RoundedBitmapDrawableFactory...");
+            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), logoBitmap);
+
+            Log.d(TAG, "Setting the  image as the logo...");
+            imageView.setImageDrawable(roundedBitmapDrawable);
+
+            Log.d(TAG, "Image Put in ImageView");
+        }
+    }
 
 }
