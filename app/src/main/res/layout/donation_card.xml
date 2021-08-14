@@ -19,7 +19,7 @@
             android:layout_width="375dp"
             android:layout_height="40dp"
             android:layout_marginTop="12dp"
-            android:text="name donated to name"
+            android:text="@string/donation_card_filler_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -27,47 +27,53 @@
         <Button
             android:id="@+id/matchButton"
             android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_height="48dp"
             android:paddingStart="1dp"
             android:paddingTop="1dp"
             android:paddingEnd="1dp"
             android:paddingBottom="1dp"
-            android:text="match"
+            android:text="@string/matchButtonText"
+            android:textColor="#0D47A1"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/cardDescription"
+            app:layout_constraintBottom_toBottomOf="@+id/eventCard"
             app:layout_constraintEnd_toStartOf="@+id/shareButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/eventCard" />
+            app:layout_constraintTop_toBottomOf="@id/cardDescription"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <Button
             android:id="@+id/shareButton"
             android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_height="48dp"
             android:paddingStart="1dp"
             android:paddingTop="1dp"
             android:paddingEnd="1dp"
             android:paddingBottom="1dp"
-            android:text="share"
+            android:text="@string/shareButtonText"
+            android:textColor="#0D47A1"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/cardDescription"
+            app:layout_constraintBottom_toBottomOf="@+id/eventCard"
             app:layout_constraintEnd_toStartOf="@+id/applaudButton"
             app:layout_constraintStart_toEndOf="@+id/matchButton"
-            app:layout_constraintBottom_toBottomOf="@+id/eventCard" />
+            app:layout_constraintTop_toBottomOf="@id/cardDescription"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <Button
             android:id="@+id/applaudButton"
             android:layout_width="80dp"
-            android:layout_height="34dp"
+            android:layout_height="48dp"
             android:paddingStart="1dp"
             android:paddingTop="1dp"
             android:paddingEnd="1dp"
             android:paddingBottom="1dp"
-            android:text="applaud"
+            android:text="@string/applaudButtonText"
+            android:textColor="#0D47A1"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/cardDescription"
+            app:layout_constraintBottom_toBottomOf="@id/eventCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/shareButton"
-            app:layout_constraintBottom_toBottomOf="@id/eventCard" />
+            app:layout_constraintTop_toBottomOf="@id/cardDescription"
+            tools:ignore="TouchTargetSizeCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

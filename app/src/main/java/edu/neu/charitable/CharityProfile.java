@@ -299,9 +299,9 @@ public class CharityProfile extends AppCompatActivity {
             Log.d(TAG, "Creating a RoundedBitmapDrawableFactory...");
             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), logoBitmap);
 
-            Log.d(TAG, "Setting the circular image as the logo...");
-            roundedBitmapDrawable.setCircular(true);
+            Log.d(TAG, "Setting the  image as the logo...");
             imageView.setImageDrawable(roundedBitmapDrawable);
+
             Log.d(TAG, "Image Put in ImageView");
         }
     }
