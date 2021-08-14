@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -197,54 +196,73 @@ public class CharityProfile extends AppCompatActivity {
 
                             // If the charity ID matches this charity's ID, make a post
                             HashMap<String, Object> donation = (HashMap<String, Object>) userDonations.get(donationID);
-                            String userWhoDonated = (String) donation.get("user");
+                            String userWhoDonatedID = (String) donation.get("user");
 
                             if (donation.get("charity").equals(charityName) ) {
 
                                 Log.d(TAG, "Donation found for  " + charityName + " with donationID: " + donationID);
 
-                                // Need to find the user of the username who donated
-                                referenceUsersDB.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshotUsers) {
-                                        Object userDataSnapshot = dataSnapshotUsers.getValue(Object.class);
+                                // Get the timestamp from the found post.
+                                long timestamp = (long) donation.get("timestamp");
 
-                                        if (userDataSnapshot != null) {
+                                // Get the amount of the donation from the found post.
+                                float amount = 0;
 
-                                            // Examine snapshot & retrieve this user's username via the ID
-                                            HashMap<String, Object> userDB = (HashMap<String, Object>) userDataSnapshot;
+                                try { // Sometimes it is a double
+                                    amount = ((Double)donation.get("amount")).floatValue();
+                                } catch (ClassCastException e) { // Other times it is a float
+                                    amount = (float) Math.round((long)(donation.get("amount")));
+                                }
 
+                                // Get the number of donation from the post; if none, then it's 0
+                                int numApplauds = 0;
+                                if (donation.get("numApplauds") != null) {
+                                    numApplauds = (int) donation.get("numApplauds");
+                                }
 
-                                            String userWhoDonatedUsername;
-                                            try {
-                                                HashMap<String, String> curUser = (HashMap<String, String>) userDB.get(userWhoDonated);
-//                                            Log.d(TAG, "Looking at Users database .... curUser " + curUser.toString());
-//                                            Log.d(TAG, "Looking at Users database .... hoping to get their username " + curUser.toString());
+                                // Create the post based on the information
+                                Post newPost = new Post(timestamp, "donation", userWhoDonatedID, charityName,
+                                        null, amount, "", numApplauds);
+                                posts.add(newPost);
+                                charityAdapter.notifyItemInserted(posts.size() - 1);
 
-                                                userWhoDonatedUsername = curUser.get("username");
-                                                Log.d(TAG, "User who donated: " + userWhoDonatedUsername);
-                                            }
-                                            catch (NullPointerException e) {
-                                                userWhoDonatedUsername = "Unknown";
-                                                Log.d(TAG, "Does this donation not have a username? " +
-                                                        "" + donation.toString());
-                                            }
-
-                                            Post newPost = new Post("donation", userWhoDonatedUsername, charityName,
-                                                    null, 5, "", 0);
-                                            posts.add(newPost);
-                                            charityAdapter.notifyItemInserted(posts.size() - 1);
-
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-
-
+//                                // Need to find the user of the username who donated
+//                                referenceUsersDB.addValueEventListener(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(DataSnapshot dataSnapshotUsers) {
+//                                        Object userDataSnapshot = dataSnapshotUsers.getValue(Object.class);
+//
+//                                        if (userDataSnapshot != null) {
+//
+////                                            // Examine snapshot & retrieve this user's username via the ID
+////                                            HashMap<String, Object> userDB = (HashMap<String, Object>) userDataSnapshot;
+////
+////
+////                                            String userWhoDonatedUsername;
+////                                            try {
+////                                                HashMap<String, String> curUser = (HashMap<String, String>) userDB.get(userWhoDonated);
+//////                                            Log.d(TAG, "Looking at Users database .... curUser " + curUser.toString());
+//////                                            Log.d(TAG, "Looking at Users database .... hoping to get their username " + curUser.toString());
+////
+////                                                userWhoDonatedUsername = curUser.get("username");
+////                                                Log.d(TAG, "User who donated: " + userWhoDonatedUsername);
+////                                            }
+////                                            catch (NullPointerException e) {
+////                                                userWhoDonatedUsername = "Unknown";
+////                                                Log.d(TAG, "Does this donation not have a username? " +
+////                                                        "" + donation.toString());
+////                                            }
+//
+//
+//
+//                                        }
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                                    }
+//                                });
 
                             }
 
@@ -252,8 +270,6 @@ public class CharityProfile extends AppCompatActivity {
                         }
 
                     }
-
-
 
                 }
             }
