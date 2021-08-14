@@ -175,16 +175,60 @@ public class NotificationListener extends IntentService {
                                                     PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0, intent, 0);
 
 
-
-                                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationListener.this, "reminder")
+                                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationListener.this, "reminder")
+                                                    if (newPost.type.equals("donation")) {
+                                                                builder
                                                                 .setSmallIcon(R.drawable.ic_vines)
                                                                 .setContentTitle("Charitable")
-                                                                .setContentText("New " + newPost.type)
+                                                                .setContentText("New donation!" )
                                                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                                                 .setContentIntent(pendingIntent)
                                                                 .setChannelId("reminder")
                                                                 .setAutoCancel(true);
-                                                    
+                                                    } else if (newPost.type.equals("match")) {
+                                                                builder
+                                                                .setSmallIcon(R.drawable.ic_vines)
+                                                                .setContentTitle("Charitable")
+                                                                .setContentText("New match!" )
+                                                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                                                .setContentIntent(pendingIntent)
+                                                                .setChannelId("reminder")
+                                                                .setAutoCancel(true);
+                                                    } else if (newPost.type.equals("pool")) {
+                                                                builder
+                                                                .setSmallIcon(R.drawable.ic_vines)
+                                                                .setContentTitle("Charitable")
+                                                                .setContentText("New donation to pool!" )
+                                                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                                                .setContentIntent(pendingIntent)
+                                                                .setChannelId("reminder")
+                                                                .setAutoCancel(true);
+                                                    } else if (newPost.type.equals("match_pool")) {
+                                                                builder
+                                                                .setSmallIcon(R.drawable.ic_vines)
+                                                                .setContentTitle("Charitable")
+                                                                .setContentText("New mactch of someone's donation to pool!" )
+                                                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                                                .setContentIntent(pendingIntent)
+                                                                .setChannelId("reminder")
+                                                                .setAutoCancel(true);
+                                                    } else if (newPost.type.equals("thank")) {
+                                                                builder.setSmallIcon(R.drawable.ic_vines)
+                                                                .setContentTitle("Charitable")
+                                                                .setContentText("New thank you direct from user!" )
+                                                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                                                .setContentIntent(pendingIntent)
+                                                                .setChannelId("reminder")
+                                                                .setAutoCancel(true);
+                                                    } else {
+                                                                builder.setSmallIcon(R.drawable.ic_vines)
+                                                                .setContentTitle("Charitable")
+                                                                .setContentText("New post" )
+                                                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                                                .setContentIntent(pendingIntent)
+                                                                .setChannelId("reminder")
+                                                                .setAutoCancel(true);
+                                                    }
 
                                                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(NotificationListener.this);
                                                     notificationManagerCompat.notify(3, builder.build());
