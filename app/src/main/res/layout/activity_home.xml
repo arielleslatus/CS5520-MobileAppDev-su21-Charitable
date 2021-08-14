@@ -22,7 +22,7 @@
         app:itemIconSize="@dimen/_26"
         app:itemIconTint="@color/green_dark"
         app:itemTextColor="@android:color/white"
-        app:menu="@menu/bottom_menu" />
+        app:menu="@menu/bottom_menu"/>
     <!--
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/profile_button"

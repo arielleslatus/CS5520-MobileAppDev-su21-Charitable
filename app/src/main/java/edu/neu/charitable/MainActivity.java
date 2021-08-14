@@ -1,10 +1,15 @@
 package edu.neu.charitable;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -58,16 +63,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "MainActivity";
 
+    private void createNotificationChannelReminder(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = new NotificationChannel("reminder", "Reminder", NotificationManager.IMPORTANCE_DEFAULT );
+            notificationChannel.setDescription("Donation Reminder");
+            notificationChannel.setShowBadge(true);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        createNotificationChannelReminder();
+
         //theming doesn't seem to turn off night mode (ugly colors persist)
         //later figure out how to set second color scheme
         //this is a bad solution as it recreation of main activity
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
 
         setContentView(R.layout.activity_main);
 
@@ -105,6 +121,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
 
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        //Look for stored info
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        String email = preferences.getString("email", null);
+        String password = preferences.getString("password", null);
+        if (email != null && !email.equals("") && password != null && !password.equals("")) {
+            progressBar.setVisibility(View.VISIBLE);
+            //FireBaseBackgroundService.startActionFoo(MainActivity.this, email, password);
+            FireBaseBackgroundService.startActionBaz(MainActivity.this, email, password);
+            autoLogin(email, password);
+        }
+
         register = (TextView) findViewById(R.id.register);
         register.setOnClickListener(this);
 
@@ -113,8 +142,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         editTextEmail = (EditText) findViewById(R.id.email);
         editTextPassword = (EditText) findViewById(R.id.password);
-
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -153,6 +180,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
+    }
+
+    private void autoLogin(String email, String password) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+
+                if (task.isSuccessful()) {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (user.isEmailVerified()) {
+                        //Check if this user is normal or part of donation pool
+                        FirebaseDatabase.getInstance().getReference("user_pool").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    Boolean u = snapshot.getValue(Boolean.class);
+                                    if (u != null) {
+                                        startActivity(new Intent(MainActivity.this, DirectDonationHome.class));
+                                    } else {
+                                        startActivity(new Intent(MainActivity.this, Home.class));
+                                    }
+                                } else {
+                                    startActivity(new Intent(MainActivity.this, Home.class));
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                startActivity(new Intent(MainActivity.this, Home.class));
+                            }
+                        });
+                    } else {
+                        user.sendEmailVerification();
+                        Toast.makeText(MainActivity.this, "Please check your email to " +
+                                "verify your account!", Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Failed to login, please check your" +
+                            "credentials", Toast.LENGTH_LONG).show();
+                    progressBar.setVisibility(View.GONE);
+                }
+
+            }
+        });
     }
 
     private void userLogin() {
@@ -199,6 +272,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user.isEmailVerified()) {
+
+                        //Save login
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        SharedPreferences.Editor ed = preferences.edit();
+                        ed.putString("email", email);
+                        ed.putString("password", password);
+                        ed.apply();
+
+
                         //Check if this user is normal or part of donation pool
                         FirebaseDatabase.getInstance().getReference("user_pool").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
