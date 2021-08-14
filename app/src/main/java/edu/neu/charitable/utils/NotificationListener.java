@@ -207,7 +207,7 @@ public class NotificationListener extends IntentService {
                                                                 builder
                                                                 .setSmallIcon(R.drawable.ic_vines)
                                                                 .setContentTitle("Charitable")
-                                                                .setContentText("New match of someone's donation to pool!" )
+                                                                .setContentText("New match of someone's donation to Charitable pool!" )
                                                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                                                 .setContentIntent(pendingIntent)
                                                                 .setChannelId("reminder")
